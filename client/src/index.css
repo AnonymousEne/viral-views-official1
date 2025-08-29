@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(222.2, 84%, 4.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222.2, 84%, 4.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222.2, 84%, 4.9%);
+  --primary: hsl(222.2, 47.4%, 11.2%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(222.2, 84%, 4.9%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215.4, 16.3%, 46.9%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(222.2, 84%, 4.9%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(214.3, 31.8%, 91.4%);
+  --input: hsl(214.3, 31.8%, 91.4%);
+  --ring: hsl(222.2, 84%, 4.9%);
+  --radius: 0.5rem;
+  --font-sans: 'Inter', sans-serif;
+  
+  /* Music Platform Colors */
+  --dark-100: hsl(220, 13%, 8%);
+  --dark-200: hsl(220, 15%, 12%);
+  --dark-300: hsl(220, 14%, 17%);
+  --dark-400: hsl(220, 12%, 22%);
+  --purple-500: hsl(258, 89%, 66%);
+  --purple-600: hsl(262, 83%, 58%);
+  --electric-500: hsl(217, 91%, 60%);
+  --electric-600: hsl(221, 83%, 53%);
+  --success-500: hsl(158, 64%, 52%);
+  --highlight-500: hsl(43, 96%, 56%);
+  --gold-500: hsl(48, 96%, 65%);
+}
+
+.dark {
+  --background: hsl(220, 13%, 8%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(220, 15%, 12%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(220, 15%, 12%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(258, 89%, 66%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(220, 14%, 17%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --muted: hsl(220, 12%, 22%);
+  --muted-foreground: hsl(215, 20.2%, 65.1%);
+  --accent: hsl(220, 14%, 17%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(220, 12%, 22%);
+  --input: hsl(220, 12%, 22%);
+  --ring: hsl(258, 89%, 66%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .bg-dark-100 { background-color: var(--dark-100); }
+  .bg-dark-200 { background-color: var(--dark-200); }
+  .bg-dark-300 { background-color: var(--dark-300); }
+  .bg-dark-400 { background-color: var(--dark-400); }
+  .bg-purple-500 { background-color: var(--purple-500); }
+  .bg-purple-600 { background-color: var(--purple-600); }
+  .bg-electric-500 { background-color: var(--electric-500); }
+  .bg-electric-600 { background-color: var(--electric-600); }
+  .bg-success-500 { background-color: var(--success-500); }
+  .bg-highlight-500 { background-color: var(--highlight-500); }
+  .bg-gold-500 { background-color: var(--gold-500); }
+  
+  .text-purple-500 { color: var(--purple-500); }
+  .text-electric-500 { color: var(--electric-500); }
+  .text-success-500 { color: var(--success-500); }
+  .text-highlight-500 { color: var(--highlight-500); }
+  .text-gold-500 { color: var(--gold-500); }
+  
+  .border-purple-500 { border-color: var(--purple-500); }
+  .border-electric-500 { border-color: var(--electric-500); }
+  .border-dark-400 { border-color: var(--dark-400); }
+  
+  .hover\:bg-purple-600:hover { background-color: var(--purple-600); }
+  .hover\:bg-electric-600:hover { background-color: var(--electric-600); }
+  .hover\:bg-dark-300:hover { background-color: var(--dark-300); }
+  .hover\:bg-dark-400:hover { background-color: var(--dark-400); }
+  
+  .hover\:text-purple-500:hover { color: var(--purple-500); }
+  .hover\:text-white:hover { color: white; }
+  
+  .from-purple-500 { --tw-gradient-from: var(--purple-500); }
+  .to-electric-500 { --tw-gradient-to: var(--electric-500); }
+  .via-electric-500 { --tw-gradient-via: var(--electric-500); }
+  .to-success-500 { --tw-gradient-to: var(--success-500); }
+  .from-purple-600 { --tw-gradient-from: var(--purple-600); }
+  .to-electric-600 { --tw-gradient-to: var(--electric-600); }
+  .from-highlight-500 { --tw-gradient-from: var(--highlight-500); }
+  .to-gold-500 { --tw-gradient-to: var(--gold-500); }
+}
+
+@layer components {
+  .music-gradient {
+    @apply bg-gradient-to-r from-purple-500 via-electric-500 to-success-500;
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .waveform-bar {
+    @apply bg-current;
+    animation: waveform 2s ease-in-out infinite;
+  }
+  
+  @keyframes waveform {
+    0%, 100% { height: 20%; }
+    50% { height: 100%; }
+  }
+  
+  .beat-pulse {
+    animation: beat-pulse 1s ease-in-out infinite;
+  }
+  
+  @keyframes beat-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+}
