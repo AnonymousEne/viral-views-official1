@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viral Views Media - Where Music Battles Come Alive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'vvm-purple': '#6366F1',
+                    'vvm-blue': '#3B82F6',
+                    'vvm-pink': '#EC4899',
+                    'vvm-green': '#10B981',
+                    'vvm-dark': '#0F0F23',
+                    'vvm-charcoal': '#1E1B4B',
+                    'vvm-gray': '#374151'
+                },
+                animation: {
+                    'pulse-glow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    'slide-up': 'slideUp 0.5s ease-out',
+                    'fade-in': 'fadeIn 0.3s ease-out'
+                },
+                fontFamily: {
+                    'sans': ['Inter', 'system-ui', 'sans-serif']
+                }
+            }
+        }
+    };
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .video-overlay {
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+        }
+        
+        .music-wave {
+            background: linear-gradient(45deg, #6366F1, #EC4899, #10B981);
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .battle-glow {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-vvm-dark text-white font-sans">
+    <!-- @COMPONENT: NavigationHeader [mobile-first sticky header] -->
+    <nav class="sticky top-0 z-50 bg-vvm-charcoal/90 backdrop-blur-md border-b border-vvm-gray/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-vvm-purple to-vvm-pink rounded-lg flex items-center justify-center">
+                        <i class="fas fa-music text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-vvm-purple to-vvm-pink bg-clip-text text-transparent">
+                        Viral Views
+                    </span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-white hover:text-vvm-purple transition-colors">Feed</a>
+                    <a href="#" class="text-gray-300 hover:text-vvm-purple transition-colors">Battles</a>
+                    <a href="#" class="text-gray-300 hover:text-vvm-purple transition-colors">Beats</a>
+                    <a href="#" class="text-gray-300 hover:text-vvm-purple transition-colors">Live</a>
+                </div>
+                
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    <button class="hidden md:block bg-vvm-purple hover:bg-vvm-purple/80 px-4 py-2 rounded-lg font-medium transition-colors">
+                        Go Live
+                    </button>
+                    <button class="w-8 h-8 bg-vvm-gray rounded-full flex items-center justify-center" data-mock="true">
+                        <i class="fas fa-user text-sm"></i>
+                    </button>
+                    <button class="md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: NavigationHeader -->
+
+    <!-- @COMPONENT: HeroSection [main landing area with CTA] -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Video Mock -->
+        <!-- A dynamic rap battle performance with stage lights and crowd energy -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080" 
+                 alt="Rap battle performance with stage lights" 
+                 class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-b from-vvm-dark/70 via-vvm-dark/50 to-vvm-dark/90"></div>
+        </div>
+        
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black mb-6 animate-slide-up">
+                <span class="bg-gradient-to-r from-vvm-purple via-vvm-pink to-vvm-green bg-clip-text text-transparent">
+                    BATTLE.
+                </span><br>
+                <span class="text-white">CREATE.</span><br>
+                <span class="bg-gradient-to-r from-vvm-green via-vvm-blue to-vvm-purple bg-clip-text text-transparent">
+                    DOMINATE.
+                </span>
+            </h1>
+            
+            <p class="text-xl sm:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in">
+                Where rap battles meet viral content. Upload your flows, challenge rivals, and let the community decide who reigns supreme.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
+                <button class="w-full sm:w-auto bg-gradient-to-r from-vvm-purple to-vvm-pink hover:from-vvm-purple/80 hover:to-vvm-pink/80 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 battle-glow" data-event="click:handleStartBattle">
+                    <i class="fas fa-microphone mr-2"></i>
+                    Start Your Battle
+                </button>
+                <button class="w-full sm:w-auto border-2 border-vvm-blue text-vvm-blue hover:bg-vvm-blue hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                    <i class="fas fa-play mr-2"></i>
+                    Watch Battles
+                </button>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div class="mt-12 grid grid-cols-3 gap-8 max-w-lg mx-auto">
+                <div class="text-center" data-mock="true">
+                    <div class="text-2xl sm:text-3xl font-bold text-vvm-green" data-bind="stats.activeBattles">42</div>
+                    <div class="text-sm text-gray-400">Live Battles</div>
+                </div>
+                <div class="text-center" data-mock="true">
+                    <div class="text-2xl sm:text-3xl font-bold text-vvm-purple" data-bind="stats.totalArtists">2.1K</div>
+                    <div class="text-sm text-gray-400">Artists</div>
+                </div>
+                <div class="text-center" data-mock="true">
+                    <div class="text-2xl sm:text-3xl font-bold text-vvm-pink" data-bind="stats.totalViews">8.7M</div>
+                    <div class="text-sm text-gray-400">Views</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: TrendingBattlesSection [showcase active battles] -->
+    <section class="py-16 bg-gradient-to-b from-vvm-dark to-vvm-charcoal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-2">
+                        🔥 Trending Battles
+                    </h2>
+                    <p class="text-gray-400">The hottest rap battles happening right now</p>
+                </div>
+                <button class="hidden sm:block text-vvm-purple hover:text-vvm-purple/80 font-medium">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+            
+            <!-- @MAP: trendingBattles.map(battle => ( -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Battle Card 1 -->
+                <div class="bg-vvm-charcoal rounded-2xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300 battle-glow">
+                    <div class="relative">
+                        <!-- High-energy rap battle performance on stage with dramatic lighting -->
+                        <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450" 
+                             alt="Intense rap battle performance" 
+                             class="w-full h-48 sm:h-56 object-cover" data-mock-image="true" />
+                        <div class="absolute inset-0 video-overlay"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium animate-pulse-glow">
+                                🔴 LIVE
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="flex items-center justify-between text-white">
+                                <span class="text-sm" data-bind="battle.viewCount" data-mock="true">12.3K watching</span>
+                                <div class="flex space-x-2">
+                                    <button class="bg-black/50 backdrop-blur-sm p-2 rounded-full">
+                                        <i class="fas fa-heart text-vvm-pink"></i>
+                                    </button>
+                                    <button class="bg-black/50 backdrop-blur-sm p-2 rounded-full">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex -space-x-2">
+                                    <div class="w-10 h-10 bg-vvm-purple rounded-full border-2 border-vvm-charcoal flex items-center justify-center font-bold" data-mock="true">
+                                        MC
+                                    </div>
+                                    <div class="w-10 h-10 bg-vvm-pink rounded-full border-2 border-vvm-charcoal flex items-center justify-center font-bold" data-mock="true">
+                                        KD
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-lg" data-bind="battle.title" data-mock="true">MC Flow vs Kid Dynamo</div>
+                                    <div class="text-gray-400 text-sm" data-bind="battle.category" data-mock="true">Freestyle Battle</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex space-x-4 text-sm text-gray-400">
+                                <span data-bind="battle.duration" data-mock="true"><i class="fas fa-clock mr-1"></i>2:45</span>
+                                <span data-bind="battle.votes" data-mock="true"><i class="fas fa-thumbs-up mr-1"></i>1.2K</span>
+                            </div>
+                            <button class="bg-vvm-purple hover:bg-vvm-purple/80 px-4 py-2 rounded-lg font-medium transition-colors">
+                                Join Battle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Battle Card 2 -->
+                <div class="bg-vvm-charcoal rounded-2xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
+                    <div class="relative">
+                        <!-- Professional music studio recording session with artist at microphone -->
+                        <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450" 
+                             alt="Music studio recording session" 
+                             class="w-full h-48 sm:h-56 object-cover" data-mock-image="true" />
+                        <div class="absolute inset-0 video-overlay"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="flex items-center justify-between text-white">
+                                <span class="text-sm" data-bind="battle.viewCount" data-mock="true">8.7K views</span>
+                                <div class="flex space-x-2">
+                                    <button class="bg-black/50 backdrop-blur-sm p-2 rounded-full">
+                                        <i class="fas fa-heart text-vvm-pink"></i>
+                                    </button>
+                                    <button class="bg-black/50 backdrop-blur-sm p-2 rounded-full">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex -space-x-2">
+                                    <div class="w-10 h-10 bg-vvm-green rounded-full border-2 border-vvm-charcoal flex items-center justify-center font-bold" data-mock="true">
+                                        VB
+                                    </div>
+                                    <div class="w-10 h-10 bg-vvm-blue rounded-full border-2 border-vvm-charcoal flex items-center justify-center font-bold" data-mock="true">
+                                        RL
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-lg" data-bind="battle.title" data-mock="true">Verse Blazer vs Rhythm Lord</div>
+                                    <div class="text-gray-400 text-sm" data-bind="battle.category" data-mock="true">Beat Battle</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex space-x-4 text-sm text-gray-400">
+                                <span data-bind="battle.duration" data-mock="true"><i class="fas fa-clock mr-1"></i>1:32</span>
+                                <span data-bind="battle.votes" data-mock="true"><i class="fas fa-thumbs-up mr-1"></i>856</span>
+                            </div>
+                            <button class="bg-vvm-green hover:bg-vvm-green/80 px-4 py-2 rounded-lg font-medium transition-colors">
+                                Vote Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: TrendingBattlesSection -->
+
+    <!-- @COMPONENT: FeaturedArtistsSection [highlight top performers] -->
+    <section class="py-16 bg-vvm-charcoal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    🌟 Featured Artists
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Rising stars and seasoned veterans making waves in the battle scene
+                </p>
+            </div>
+            
+            <!-- @MAP: featuredArtists.map(artist => ( -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Artist Card 1 -->
+                <div class="bg-gradient-to-b from-vvm-purple/20 to-vvm-charcoal border border-vvm-purple/30 rounded-2xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
+                    <!-- Portrait of confident young rapper with urban style -->
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400" 
+                         alt="Confident young rapper portrait" 
+                         class="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-vvm-purple object-cover" data-mock-image="true" />
+                    <h3 class="font-bold text-lg mb-2" data-bind="artist.name" data-mock="true">FlowMaster X</h3>
+                    <p class="text-vvm-purple text-sm font-medium mb-3" data-bind="artist.rank" data-mock="true">#1 Freestyle</p>
+                    <div class="flex justify-center space-x-4 text-sm text-gray-400 mb-4">
+                        <span data-bind="artist.battles" data-mock="true">23 Battles</span>
+                        <span data-bind="artist.winRate" data-mock="true">87% Win</span>
+                    </div>
+                    <button class="w-full bg-vvm-purple/20 hover:bg-vvm-purple/30 border border-vvm-purple text-vvm-purple py-2 rounded-lg transition-colors">
+                        Challenge
+                    </button>
+                </div>
+                
+                <!-- Artist Card 2 -->
+                <div class="bg-gradient-to-b from-vvm-pink/20 to-vvm-charcoal border border-vvm-pink/30 rounded-2xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
+                    <!-- Portrait of stylish female rapper with confident expression -->
+                    <img src="https://pixabay.com/get/g2e013e26c674cf2cab1ac163b674a6aa05b6872af46adae3e61ecb788498d1e955fe35a3eb7690cf200b98636225066ebbfce919cdf281512c4e8de6fbef1f1b_1280.jpg" 
+                         alt="Stylish female rapper portrait" 
+                         class="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-vvm-pink object-cover" data-mock-image="true" />
+                    <h3 class="font-bold text-lg mb-2" data-bind="artist.name" data-mock="true">Lyric Queen</h3>
+                    <p class="text-vvm-pink text-sm font-medium mb-3" data-bind="artist.rank" data-mock="true">#2 Written</p>
+                    <div class="flex justify-center space-x-4 text-sm text-gray-400 mb-4">
+                        <span data-bind="artist.battles" data-mock="true">19 Battles</span>
+                        <span data-bind="artist.winRate" data-mock="true">82% Win</span>
+                    </div>
+                    <button class="w-full bg-vvm-pink/20 hover:bg-vvm-pink/30 border border-vvm-pink text-vvm-pink py-2 rounded-lg transition-colors">
+                        Challenge
+                    </button>
+                </div>
+                
+                <!-- Artist Card 3 -->
+                <div class="bg-gradient-to-b from-vvm-green/20 to-vvm-charcoal border border-vvm-green/30 rounded-2xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
+                    <!-- Portrait of creative music producer in studio environment -->
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400" 
+                         alt="Creative music producer portrait" 
+                         class="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-vvm-green object-cover" data-mock-image="true" />
+                    <h3 class="font-bold text-lg mb-2" data-bind="artist.name" data-mock="true">BeatWizard</h3>
+                    <p class="text-vvm-green text-sm font-medium mb-3" data-bind="artist.rank" data-mock="true">#1 Producer</p>
+                    <div class="flex justify-center space-x-4 text-sm text-gray-400 mb-4">
+                        <span data-bind="artist.beats" data-mock="true">156 Beats</span>
+                        <span data-bind="artist.rating" data-mock="true">4.9★</span>
+                    </div>
+                    <button class="w-full bg-vvm-green/20 hover:bg-vvm-green/30 border border-vvm-green text-vvm-green py-2 rounded-lg transition-colors">
+                        Follow
+                    </button>
+                </div>
+                
+                <!-- Artist Card 4 -->
+                <div class="bg-gradient-to-b from-vvm-blue/20 to-vvm-charcoal border border-vvm-blue/30 rounded-2xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
+                    <!-- Portrait of young hip-hop artist with modern urban style -->
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400" 
+                         alt="Young hip-hop artist portrait" 
+                         class="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-vvm-blue object-cover" data-mock-image="true" />
+                    <h3 class="font-bold text-lg mb-2" data-bind="artist.name" data-mock="true">RhymeTime</h3>
+                    <p class="text-vvm-blue text-sm font-medium mb-3" data-bind="artist.rank" data-mock="true">#3 Rising</p>
+                    <div class="flex justify-center space-x-4 text-sm text-gray-400 mb-4">
+                        <span data-bind="artist.battles" data-mock="true">12 Battles</span>
+                        <span data-bind="artist.winRate" data-mock="true">75% Win</span>
+                    </div>
+                    <button class="w-full bg-vvm-blue/20 hover:bg-vvm-blue/30 border border-vvm-blue text-vvm-blue py-2 rounded-lg transition-colors">
+                        Challenge
+                    </button>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeaturedArtistsSection -->
+
+    <!-- @COMPONENT: BeatStoreSection [showcase beat marketplace] -->
+    <section class="py-16 bg-gradient-to-b from-vvm-charcoal to-vvm-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-2">
+                        🎵 Beat Store
+                    </h2>
+                    <p class="text-gray-400">Premium beats from top producers</p>
+                </div>
+                <button class="hidden sm:block bg-vvm-green hover:bg-vvm-green/80 px-6 py-3 rounded-lg font-medium transition-colors">
+                    Upload Beat
+                </button>
+            </div>
+            
+            <!-- @MAP: premiumBeats.map(beat => ( -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Beat Card 1 -->
+                <div class="bg-vvm-charcoal rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
+                    <div class="relative">
+                        <!-- Music producer working on beats in professional studio setup -->
+                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300" 
+                             alt="Music producer creating beats" 
+                             class="w-full h-40 object-cover" data-mock-image="true" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div class="absolute bottom-3 left-3 right-3">
+                            <div class="flex items-center justify-between">
+                                <div class="music-wave w-2 h-2 rounded-full"></div>
+                                <span class="bg-vvm-green text-white px-2 py-1 rounded text-xs font-medium" data-bind="beat.price" data-mock="true">
+                                    $25
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1" data-bind="beat.title" data-mock="true">Dark Trap Vibes</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="beat.producer" data-mock="true">by BeatWizard</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex space-x-3 text-sm text-gray-400">
+                                <span data-bind="beat.bpm" data-mock="true">140 BPM</span>
+                                <span data-bind="beat.key" data-mock="true">Em</span>
+                            </div>
+                            <div class="flex items-center space-x-1 text-vvm-green">
+                                <i class="fas fa-play text-xs"></i>
+                                <span class="text-sm" data-bind="beat.plays" data-mock="true">2.1K</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-vvm-blue hover:bg-vvm-blue/80 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-play mr-1"></i>
+                                Preview
+                            </button>
+                            <button class="bg-vvm-green hover:bg-vvm-green/80 px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-implementation="Should integrate with payment system">
+                                Buy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Beat Card 2 -->
+                <div class="bg-vvm-charcoal rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
+                    <div class="relative">
+                        <!-- Professional music studio with mixing equipment and monitors -->
+                        <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300" 
+                             alt="Professional studio mixing setup" 
+                             class="w-full h-40 object-cover" data-mock-image="true" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div class="absolute bottom-3 left-3 right-3">
+                            <div class="flex items-center justify-between">
+                                <div class="music-wave w-2 h-2 rounded-full"></div>
+                                <span class="bg-vvm-purple text-white px-2 py-1 rounded text-xs font-medium" data-bind="beat.price" data-mock="true">
+                                    $35
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1" data-bind="beat.title" data-mock="true">Melodic Drill</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="beat.producer" data-mock="true">by SoundMaster</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex space-x-3 text-sm text-gray-400">
+                                <span data-bind="beat.bpm" data-mock="true">150 BPM</span>
+                                <span data-bind="beat.key" data-mock="true">Am</span>
+                            </div>
+                            <div class="flex items-center space-x-1 text-vvm-green">
+                                <i class="fas fa-play text-xs"></i>
+                                <span class="text-sm" data-bind="beat.plays" data-mock="true">1.8K</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-vvm-blue hover:bg-vvm-blue/80 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-play mr-1"></i>
+                                Preview
+                            </button>
+                            <button class="bg-vvm-green hover:bg-vvm-green/80 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Buy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Beat Card 3 -->
+                <div class="bg-vvm-charcoal rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300">
+                    <div class="relative">
+                        <!-- Modern home studio setup with keyboards and audio equipment -->
+                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300" 
+                             alt="Modern home studio setup" 
+                             class="w-full h-40 object-cover" data-mock-image="true" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div class="absolute bottom-3 left-3 right-3">
+                            <div class="flex items-center justify-between">
+                                <div class="music-wave w-2 h-2 rounded-full"></div>
+                                <span class="bg-vvm-pink text-white px-2 py-1 rounded text-xs font-medium" data-bind="beat.price" data-mock="true">
+                                    $20
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1" data-bind="beat.title" data-mock="true">Chill Lo-Fi</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="beat.producer" data-mock="true">by ChillBeats</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex space-x-3 text-sm text-gray-400">
+                                <span data-bind="beat.bpm" data-mock="true">85 BPM</span>
+                                <span data-bind="beat.key" data-mock="true">Gm</span>
+                            </div>
+                            <div class="flex items-center space-x-1 text-vvm-green">
+                                <i class="fas fa-play text-xs"></i>
+                                <span class="text-sm" data-bind="beat.plays" data-mock="true">965</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-vvm-blue hover:bg-vvm-blue/80 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-play mr-1"></i>
+                                Preview
+                            </button>
+                            <button class="bg-vvm-green hover:bg-vvm-green/80 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Buy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BeatStoreSection -->
+
+    <!-- @COMPONENT: CallToActionSection [final conversion push] -->
+    <section class="py-20 bg-gradient-to-r from-vvm-purple via-vvm-pink to-vvm-green">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl sm:text-5xl font-black text-white mb-6">
+                Ready to Show Your Skills?
+            </h2>
+            <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                Join thousands of artists already making their mark. Upload your first video, challenge a rival, or discover your new favorite beat.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button class="w-full sm:w-auto bg-white text-vvm-purple hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105" data-event="click:handleSignUp">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Join for Free
+                </button>
+                <button class="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-vvm-purple px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                    <i class="fas fa-video mr-2"></i>
+                    Upload First Battle
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: CallToActionSection -->
+
+    <!-- @COMPONENT: FooterSection [site links and legal] -->
+    <footer class="bg-vvm-dark border-t border-vvm-gray/20 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-vvm-purple to-vvm-pink rounded-lg flex items-center justify-center">
+                            <i class="fas fa-music text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-vvm-purple to-vvm-pink bg-clip-text text-transparent">
+                            Viral Views Media
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-4 max-w-md">
+                        The premier platform for rap battles, beat creation, and music discovery. Where artists rise and legends are born.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-vvm-purple transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-vvm-purple transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-vvm-purple transition-colors">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-vvm-purple transition-colors">
+                            <i class="fab fa-tiktok text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Platform -->
+                <div>
+                    <h3 class="font-bold text-white mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Battle Feed</a></li>
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Beat Store</a></li>
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Live Streaming</a></li>
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Artist Profiles</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="font-bold text-white mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Community Rules</a></li>
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-vvm-purple transition-colors">Report Content</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-vvm-gray/20 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 Viral Views Media. All rights reserved.
+                </p>
+                <div class="flex space-x-6 text-sm text-gray-400 mt-4 sm:mt-0">
+                    <a href="#" class="hover:text-vvm-purple transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-vvm-purple transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-vvm-purple transition-colors">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: FooterSection -->
+
+    <script>
+        (function() {
+            // TODO: Implement business logic, API calls, and state management
+            
+            // Mock interactive functionality for demo purposes
+            document.addEventListener('DOMContentLoaded', function() {
+                // Animate elements on scroll
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.style.animationPlayState = 'running';
+                        }
+                    });
+                }, observerOptions);
+                
+                // Observe animated elements
+                document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(function(el) {
+                    observer.observe(el);
+                });
+                
+                // Mock button interactions
+                document.querySelectorAll('button[data-event]').forEach(function(button) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const action = this.getAttribute('data-event').split(':')[1];
+                        console.log('Action triggered:', action);
+                        // TODO: Implement actual event handlers
+                    });
+                });
+                
+                // Mock live battle updates
+                function updateLiveStats() {
+                    const liveElements = document.querySelectorAll('[data-bind*="viewCount"]');
+                    liveElements.forEach(function(el) {
+                        if (el.textContent.includes('watching')) {
+                            const current = parseFloat(el.textContent);
+                            const variation = (Math.random() - 0.5) * 0.2;
+                            const newValue = (current + variation).toFixed(1);
+                            el.textContent = newValue + 'K watching';
+                        }
+                    });
+                }
+                
+                // Update live stats every 3 seconds for demo
+                setInterval(updateLiveStats, 3000);
+                
+                // Add smooth scrolling for anchor links
+                document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

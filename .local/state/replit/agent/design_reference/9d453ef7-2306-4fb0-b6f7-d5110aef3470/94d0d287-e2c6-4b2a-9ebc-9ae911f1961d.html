@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viral Views Media - Where Music Goes Viral</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#0D1117',
+                            200: '#161B22',
+                            300: '#21262D',
+                            400: '#30363D'
+                        },
+                        purple: {
+                            500: '#8B5CF6',
+                            600: '#7C3AED'
+                        },
+                        electric: {
+                            500: '#3B82F6',
+                            600: '#2563EB'
+                        },
+                        success: {
+                            500: '#10B981'
+                        },
+                        highlight: {
+                            500: '#F59E0B'
+                        },
+                        gold: {
+                            500: '#FCD34D'
+                        }
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-dark-100 text-white font-inter">
+    <!-- @COMPONENT: Header [navigation and user controls] -->
+    <header class="bg-dark-200 border-b border-dark-400 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-electric-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-music text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-purple-500 to-electric-500 bg-clip-text text-transparent">
+                        Viral Views
+                    </span>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-white hover:text-purple-500 transition-colors font-medium">Feed</a>
+                    <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors font-medium">Battles</a>
+                    <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors font-medium">Mix</a>
+                    <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors font-medium">Beats</a>
+                    <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors font-medium">Live</a>
+                </nav>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Create
+                    </button>
+                    <div class="w-8 h-8 bg-gradient-to-br from-highlight-500 to-gold-500 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <!-- @COMPONENT: HeroSection [main landing area with featured content] -->
+    <section class="relative overflow-hidden">
+        <!-- A vibrant hip-hop concert stage with colorful lighting and energetic crowd -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" style="background-image: url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=1080');"></div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-7xl font-black mb-6">
+                    Where Music
+                    <span class="bg-gradient-to-r from-purple-500 via-electric-500 to-success-500 bg-clip-text text-transparent block">
+                        Goes Viral
+                    </span>
+                </h1>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+                    Create, collaborate, and compete. Join the ultimate platform for rap battles, beat production, and music collaboration.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-gradient-to-r from-purple-500 to-electric-500 hover:from-purple-600 hover:to-electric-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105">
+                        Start Creating
+                    </button>
+                    <button class="border border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                        Explore Battles
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: FeaturedContent [trending videos and battles] -->
+    <section class="bg-dark-200 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-10">
+                <h2 class="text-3xl font-bold">Trending Now</h2>
+                <div class="flex space-x-4">
+                    <button class="bg-purple-500 text-white px-4 py-2 rounded-lg font-medium">Battles</button>
+                    <button class="text-gray-400 hover:text-white px-4 py-2 rounded-lg font-medium">Freestyles</button>
+                    <button class="text-gray-400 hover:text-white px-4 py-2 rounded-lg font-medium">Collaborations</button>
+                </div>
+            </div>
+
+            <!-- @MAP: trendingVideos.map(video => ( -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Video Card 1 -->
+                <div class="bg-dark-300 rounded-xl overflow-hidden hover:bg-dark-400 transition-colors group cursor-pointer">
+                    <!-- A dynamic rap battle performance on stage with two artists facing each other -->
+                    <div class="aspect-video bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450');">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">BATTLE</span>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <span class="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">2:34</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all">
+                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2" data-bind="video.title">Fire Cypher Battle: MC Thunder vs Lyric King</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="video.artist">@MCThunder • @LyricKing</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                <span><i class="fas fa-eye mr-1"></i><span data-bind="video.views">284K</span></span>
+                                <span><i class="fas fa-heart mr-1"></i><span data-bind="video.likes">12.5K</span></span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold" data-bind="video.votes.thunder">67</span>
+                                </div>
+                                <span class="text-gray-400 text-sm">vs</span>
+                                <div class="w-6 h-6 bg-electric-500 rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold" data-bind="video.votes.lyric">33</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 2 -->
+                <div class="bg-dark-300 rounded-xl overflow-hidden hover:bg-dark-400 transition-colors group cursor-pointer">
+                    <!-- A professional music studio with mixing console and recording equipment -->
+                    <div class="aspect-video bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450');">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-success-500 text-white px-2 py-1 rounded text-sm font-medium">COLLAB</span>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <span class="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">4:12</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all">
+                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2" data-bind="video.title">Beat Breakdown: Producer Session Live</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="video.artist">@BeatMasterPro • @RhymeFlow</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                <span><i class="fas fa-eye mr-1"></i><span data-bind="video.views">156K</span></span>
+                                <span><i class="fas fa-heart mr-1"></i><span data-bind="video.likes">8.9K</span></span>
+                            </div>
+                            <div class="text-highlight-500 text-sm font-medium">
+                                <i class="fas fa-music mr-1"></i>Beat Available
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 3 -->
+                <div class="bg-dark-300 rounded-xl overflow-hidden hover:bg-dark-400 transition-colors group cursor-pointer">
+                    <!-- An energetic crowd at a live hip-hop concert with hands raised -->
+                    <div class="aspect-video bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450');">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium animate-pulse">LIVE</span>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <span class="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">LIVE</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="w-16 h-16 bg-red-500 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2" data-bind="video.title">Freestyle Friday: Open Cypher Session</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="video.artist">@ViralViews • Live Session</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                <span class="text-red-500"><i class="fas fa-circle mr-1 text-xs"></i><span data-bind="video.viewers">2.3K</span> watching</span>
+                                <span><i class="fas fa-heart mr-1"></i><span data-bind="video.likes">892</span></span>
+                            </div>
+                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
+                                Join Live
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeaturedContent -->
+
+    <!-- @COMPONENT: BattleSection [rap battle features and voting] -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Epic Rap Battles</h2>
+                <p class="text-gray-400 text-xl">Vote for your favorite and join the ultimate rap competitions</p>
+            </div>
+
+            <div class="bg-dark-200 rounded-2xl p-8 mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                    <!-- Contestant 1 -->
+                    <div class="text-center lg:text-right">
+                        <div class="inline-block mb-4">
+                            <!-- A confident male rapper performing on stage with microphone -->
+                            <div class="w-24 h-24 bg-cover bg-center rounded-full border-4 border-purple-500" style="background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200');"></div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2" data-bind="battle.contestant1.name">MC Thunder</h3>
+                        <p class="text-gray-400 mb-4" data-bind="battle.contestant1.bio">The Lightning Strike</p>
+                        <div class="bg-purple-500 rounded-lg p-4">
+                            <div class="text-3xl font-black mb-2" data-bind="battle.contestant1.votes">67%</div>
+                            <button class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white py-2 rounded font-medium transition-all" data-event="click:voteBattle">
+                                Vote Thunder
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- VS Section -->
+                    <div class="text-center">
+                        <div class="text-6xl font-black text-gray-600 mb-4">VS</div>
+                        <div class="bg-dark-300 rounded-lg p-4">
+                            <div class="text-sm text-gray-400 mb-2">Battle Status</div>
+                            <div class="text-highlight-500 font-bold">Round 2/3</div>
+                            <div class="text-sm text-gray-400 mt-2">Ends in 2h 15m</div>
+                        </div>
+                        <button class="mt-4 bg-gradient-to-r from-purple-500 to-electric-500 text-white px-6 py-3 rounded-lg font-bold hover:from-purple-600 hover:to-electric-600 transition-all">
+                            Watch Battle
+                        </button>
+                    </div>
+
+                    <!-- Contestant 2 -->
+                    <div class="text-center lg:text-left">
+                        <div class="inline-block mb-4">
+                            <!-- A skilled female rapper with confident expression and stylish outfit -->
+                            <div class="w-24 h-24 bg-cover bg-center rounded-full border-4 border-electric-500" style="background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200');"></div>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2" data-bind="battle.contestant2.name">Lyric Queen</h3>
+                        <p class="text-gray-400 mb-4" data-bind="battle.contestant2.bio">Wordplay Royalty</p>
+                        <div class="bg-electric-500 rounded-lg p-4">
+                            <div class="text-3xl font-black mb-2" data-bind="battle.contestant2.votes">33%</div>
+                            <button class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white py-2 rounded font-medium transition-all" data-event="click:voteBattle">
+                                Vote Queen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battle Categories -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-dark-200 hover:bg-dark-300 rounded-xl p-6 text-center cursor-pointer transition-colors group">
+                    <i class="fas fa-fire text-3xl text-highlight-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-bold mb-2">Freestyle</h4>
+                    <p class="text-gray-400 text-sm">Spontaneous battles</p>
+                </div>
+                <div class="bg-dark-200 hover:bg-dark-300 rounded-xl p-6 text-center cursor-pointer transition-colors group">
+                    <i class="fas fa-crown text-3xl text-gold-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-bold mb-2">Championship</h4>
+                    <p class="text-gray-400 text-sm">Elite competitions</p>
+                </div>
+                <div class="bg-dark-200 hover:bg-dark-300 rounded-xl p-6 text-center cursor-pointer transition-colors group">
+                    <i class="fas fa-users text-3xl text-success-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-bold mb-2">Team Battles</h4>
+                    <p class="text-gray-400 text-sm">Crew vs crew</p>
+                </div>
+                <div class="bg-dark-200 hover:bg-dark-300 rounded-xl p-6 text-center cursor-pointer transition-colors group">
+                    <i class="fas fa-microphone text-3xl text-purple-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-bold mb-2">Open Mic</h4>
+                    <p class="text-gray-400 text-sm">Practice rounds</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BattleSection -->
+
+    <!-- @COMPONENT: CollaborativeSection [mixing and collaboration features] -->
+    <section class="bg-dark-200 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Collaborative Studio</h2>
+                <p class="text-gray-400 text-xl">Mix tracks, layer vocals, and create music together in real-time</p>
+            </div>
+
+            <div class="bg-dark-300 rounded-2xl p-8">
+                <!-- @FUNCTIONALITY: This mixing interface should implement multi-track audio with waveform visualization -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Track Layers -->
+                    <div class="lg:col-span-2">
+                        <h3 class="text-xl font-bold mb-6">Current Project: "Street Symphony"</h3>
+                        
+                        <!-- Track 1 - Beat -->
+                        <div class="bg-dark-400 rounded-lg p-4 mb-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-highlight-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-drum text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium" data-bind="track.name">Hip Hop Beat 120 BPM</div>
+                                        <div class="text-sm text-gray-400" data-bind="track.artist">@BeatMaster</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-success-500 hover:text-success-400"><i class="fas fa-play"></i></button>
+                                    <button class="text-gray-400 hover:text-white"><i class="fas fa-volume-up"></i></button>
+                                </div>
+                            </div>
+                            <!-- Waveform visualization placeholder -->
+                            <div class="h-12 bg-dark-200 rounded flex items-center justify-center overflow-hidden">
+                                <div class="flex space-x-1 h-8">
+                                    <!-- Waveform bars -->
+                                    <div class="w-1 bg-highlight-500 h-4"></div>
+                                    <div class="w-1 bg-highlight-500 h-6"></div>
+                                    <div class="w-1 bg-highlight-500 h-3"></div>
+                                    <div class="w-1 bg-highlight-500 h-8"></div>
+                                    <div class="w-1 bg-highlight-500 h-5"></div>
+                                    <div class="w-1 bg-highlight-500 h-7"></div>
+                                    <div class="w-1 bg-highlight-500 h-4"></div>
+                                    <div class="w-1 bg-highlight-500 h-6"></div>
+                                    <div class="w-1 bg-highlight-500 h-2"></div>
+                                    <div class="w-1 bg-highlight-500 h-8"></div>
+                                    <div class="w-1 bg-highlight-500 h-3"></div>
+                                    <div class="w-1 bg-highlight-500 h-5"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Track 2 - Vocals -->
+                        <div class="bg-dark-400 rounded-lg p-4 mb-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-microphone text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium" data-bind="track.name">Main Vocals - Verse 1</div>
+                                        <div class="text-sm text-gray-400" data-bind="track.artist">@MCThunder</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-success-500 hover:text-success-400"><i class="fas fa-play"></i></button>
+                                    <button class="text-gray-400 hover:text-white"><i class="fas fa-volume-up"></i></button>
+                                </div>
+                            </div>
+                            <div class="h-12 bg-dark-200 rounded flex items-center justify-center overflow-hidden">
+                                <div class="flex space-x-1 h-8">
+                                    <div class="w-1 bg-purple-500 h-2"></div>
+                                    <div class="w-1 bg-purple-500 h-7"></div>
+                                    <div class="w-1 bg-purple-500 h-5"></div>
+                                    <div class="w-1 bg-purple-500 h-3"></div>
+                                    <div class="w-1 bg-purple-500 h-8"></div>
+                                    <div class="w-1 bg-purple-500 h-6"></div>
+                                    <div class="w-1 bg-purple-500 h-4"></div>
+                                    <div class="w-1 bg-purple-500 h-7"></div>
+                                    <div class="w-1 bg-purple-500 h-2"></div>
+                                    <div class="w-1 bg-purple-500 h-5"></div>
+                                    <div class="w-1 bg-purple-500 h-8"></div>
+                                    <div class="w-1 bg-purple-500 h-3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Track 3 - Empty slot for collaboration -->
+                        <div class="bg-dark-400 border-2 border-dashed border-gray-600 rounded-lg p-4 mb-4">
+                            <div class="text-center py-8">
+                                <i class="fas fa-plus text-3xl text-gray-500 mb-3"></i>
+                                <div class="text-gray-400 mb-3">Add your layer to this track</div>
+                                <button class="bg-success-500 hover:bg-success-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-microphone mr-2"></i>Record Vocals
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mixing Controls -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-6">Mix Controls</h3>
+                        
+                        <!-- Master Volume -->
+                        <div class="bg-dark-400 rounded-lg p-4 mb-4">
+                            <div class="text-sm text-gray-400 mb-2">Master Volume</div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-volume-down text-gray-400"></i>
+                                <div class="flex-1 bg-dark-200 h-2 rounded-full">
+                                    <div class="w-3/4 h-full bg-gradient-to-r from-success-500 to-success-600 rounded-full"></div>
+                                </div>
+                                <i class="fas fa-volume-up text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <!-- Effects -->
+                        <div class="bg-dark-400 rounded-lg p-4 mb-4">
+                            <div class="text-sm text-gray-400 mb-3">Audio Effects</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="bg-purple-500 text-white px-3 py-2 rounded text-sm font-medium">Reverb</button>
+                                <button class="bg-dark-200 text-gray-400 px-3 py-2 rounded text-sm font-medium">Delay</button>
+                                <button class="bg-dark-200 text-gray-400 px-3 py-2 rounded text-sm font-medium">Chorus</button>
+                                <button class="bg-electric-500 text-white px-3 py-2 rounded text-sm font-medium">Auto-Tune</button>
+                            </div>
+                        </div>
+
+                        <!-- Collaborators -->
+                        <div class="bg-dark-400 rounded-lg p-4">
+                            <div class="text-sm text-gray-400 mb-3">Active Collaborators</div>
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-6 h-6 bg-highlight-500 rounded-full"></div>
+                                    <span class="text-sm" data-bind="collaborator.name">BeatMaster</span>
+                                    <div class="w-2 h-2 bg-success-500 rounded-full"></div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-6 h-6 bg-purple-500 rounded-full"></div>
+                                    <span class="text-sm" data-bind="collaborator.name">MCThunder</span>
+                                    <div class="w-2 h-2 bg-success-500 rounded-full"></div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-6 h-6 bg-gray-500 rounded-full"></div>
+                                    <span class="text-sm text-gray-400" data-bind="collaborator.name">You</span>
+                                    <div class="w-2 h-2 bg-success-500 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Actions -->
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-dark-400">
+                    <div class="flex items-center space-x-4">
+                        <button class="text-gray-400 hover:text-white"><i class="fas fa-undo mr-2"></i>Undo</button>
+                        <button class="text-gray-400 hover:text-white"><i class="fas fa-redo mr-2"></i>Redo</button>
+                        <button class="text-gray-400 hover:text-white"><i class="fas fa-save mr-2"></i>Save</button>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button class="bg-dark-400 hover:bg-dark-300 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Export Mix
+                        </button>
+                        <button class="bg-gradient-to-r from-purple-500 to-electric-500 hover:from-purple-600 hover:to-electric-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                            Publish Track
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: CollaborativeSection -->
+
+    <!-- @COMPONENT: BeatStore [producer beat marketplace] -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-4xl font-bold mb-4">Producer Beat Store</h2>
+                    <p class="text-gray-400 text-xl">Discover and license beats from top producers worldwide</p>
+                </div>
+                <button class="bg-success-500 hover:bg-success-600 text-white px-6 py-3 rounded-lg font-bold transition-colors">
+                    <i class="fas fa-upload mr-2"></i>Upload Beats
+                </button>
+            </div>
+
+            <!-- @MAP: featuredBeats.map(beat => ( -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <!-- Beat Card 1 -->
+                <div class="bg-dark-200 rounded-xl overflow-hidden hover:bg-dark-300 transition-colors group">
+                    <!-- A professional music producer working in a modern studio with synthesizers -->
+                    <div class="aspect-video bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450');">
+                        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-highlight-500 text-white px-2 py-1 rounded text-sm font-medium">TRAP</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">140 BPM</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="w-16 h-16 bg-highlight-500 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2" data-bind="beat.title">Dark Energy</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="beat.producer">by @DarkVibesPro</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                <span><i class="fas fa-play mr-1"></i><span data-bind="beat.plays">45.2K</span></span>
+                                <span><i class="fas fa-heart mr-1"></i><span data-bind="beat.likes">3.1K</span></span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-success-500" data-bind="beat.price">$25</div>
+                                <div class="text-xs text-gray-400">Basic License</div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-success-500 hover:bg-success-600 text-white py-2 rounded font-medium transition-colors">
+                                Buy License
+                            </button>
+                            <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 px-3 py-2 rounded transition-colors">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beat Card 2 -->
+                <div class="bg-dark-200 rounded-xl overflow-hidden hover:bg-dark-300 transition-colors group">
+                    <!-- A close-up of professional mixing equipment and audio interfaces -->
+                    <div class="aspect-video bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450');">
+                        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm font-medium">BOOM BAP</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">95 BPM</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="w-16 h-16 bg-purple-500 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2" data-bind="beat.title">Old School Vibes</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="beat.producer">by @VintageBeats</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                <span><i class="fas fa-play mr-1"></i><span data-bind="beat.plays">23.8K</span></span>
+                                <span><i class="fas fa-heart mr-1"></i><span data-bind="beat.likes">1.9K</span></span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-success-500" data-bind="beat.price">$35</div>
+                                <div class="text-xs text-gray-400">Premium License</div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-success-500 hover:bg-success-600 text-white py-2 rounded font-medium transition-colors">
+                                Buy License
+                            </button>
+                            <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 px-3 py-2 rounded transition-colors">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beat Card 3 -->
+                <div class="bg-dark-200 rounded-xl overflow-hidden hover:bg-dark-300 transition-colors group">
+                    <!-- A modern home studio setup with MIDI controllers and computer screens -->
+                    <div class="aspect-video bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1598653222000-6b7b7a552625?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450');">
+                        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-electric-500 text-white px-2 py-1 rounded text-sm font-medium">DRILL</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">150 BPM</span>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="w-16 h-16 bg-electric-500 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2" data-bind="beat.title">Street Symphony</h3>
+                        <p class="text-gray-400 text-sm mb-3" data-bind="beat.producer">by @StreetSoundz</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                <span><i class="fas fa-play mr-1"></i><span data-bind="beat.plays">67.5K</span></span>
+                                <span><i class="fas fa-heart mr-1"></i><span data-bind="beat.likes">5.2K</span></span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-success-500" data-bind="beat.price">$45</div>
+                                <div class="text-xs text-gray-400">Exclusive License</div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-success-500 hover:bg-success-600 text-white py-2 rounded font-medium transition-colors">
+                                Buy License
+                            </button>
+                            <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 px-3 py-2 rounded transition-colors">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+
+            <!-- Genre Categories -->
+            <div class="bg-dark-200 rounded-2xl p-8">
+                <h3 class="text-2xl font-bold mb-6">Browse by Genre</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <button class="bg-highlight-500 hover:bg-highlight-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">Trap</button>
+                    <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors">Boom Bap</button>
+                    <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors">Drill</button>
+                    <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors">R&B</button>
+                    <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors">Lo-Fi</button>
+                    <button class="bg-dark-300 hover:bg-dark-400 text-gray-300 py-3 px-4 rounded-lg font-medium transition-colors">Experimental</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: BeatStore -->
+
+    <!-- @COMPONENT: Footer [site information and links] -->
+    <footer class="bg-dark-200 border-t border-dark-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-electric-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-music text-white text-lg"></i>
+                        </div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-purple-500 to-electric-500 bg-clip-text text-transparent">
+                            Viral Views
+                        </span>
+                    </div>
+                    <p class="text-gray-400 mb-4">The ultimate platform for rap battles, music collaboration, and beat production.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-purple-500"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-purple-500"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-purple-500"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-purple-500"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+
+                <!-- Platform -->
+                <div>
+                    <h4 class="font-bold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Feed</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Battles</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Collaborate</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Beat Store</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Go Live</a></li>
+                    </ul>
+                </div>
+
+                <!-- Community -->
+                <div>
+                    <h4 class="font-bold mb-4">Community</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Artists</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Producers</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Fans</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Events</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Challenges</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-bold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Creator Guidelines</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-dark-400 mt-8 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2024 Viral Views Media. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- Mobile Navigation (Fixed Bottom) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-dark-200 border-t border-dark-400 md:hidden z-40">
+        <div class="flex items-center justify-around py-2">
+            <button class="flex flex-col items-center py-2 px-1">
+                <i class="fas fa-home text-purple-500 text-lg mb-1"></i>
+                <span class="text-xs text-purple-500">Feed</span>
+            </button>
+            <button class="flex flex-col items-center py-2 px-1">
+                <i class="fas fa-fire text-gray-400 text-lg mb-1"></i>
+                <span class="text-xs text-gray-400">Battles</span>
+            </button>
+            <button class="flex flex-col items-center py-2 px-1">
+                <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-electric-500 rounded-full flex items-center justify-center mb-1">
+                    <i class="fas fa-plus text-white text-sm"></i>
+                </div>
+                <span class="text-xs text-purple-500">Create</span>
+            </button>
+            <button class="flex flex-col items-center py-2 px-1">
+                <i class="fas fa-music text-gray-400 text-lg mb-1"></i>
+                <span class="text-xs text-gray-400">Beats</span>
+            </button>
+            <button class="flex flex-col items-center py-2 px-1">
+                <div class="w-6 h-6 bg-gradient-to-br from-highlight-500 to-gold-500 rounded-full mb-1"></div>
+                <span class="text-xs text-gray-400">Profile</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Basic interaction handling - placeholder for React implementation
+        (function() {
+            // TODO: Implement vote handling for battles
+            // TODO: Implement audio player controls for beats and tracks
+            // TODO: Implement collaborative mixing interface
+            // TODO: Implement real-time collaboration features
+            // TODO: Implement beat store purchasing flow
+            // TODO: Implement video upload and streaming functionality
+            
+            // Demo: Simple play button interactions
+            document.querySelectorAll('.fa-play').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // In real implementation, this would control audio/video playback
+                    console.log('Play button clicked - implement audio/video control');
+                });
+            });
+            
+            // Demo: Battle voting simulation
+            document.querySelectorAll('[data-event="click:voteBattle"]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // In real implementation, this would submit vote to backend
+                    console.log('Vote submitted - implement voting logic');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
