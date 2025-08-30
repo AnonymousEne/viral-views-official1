@@ -3,7 +3,6 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Battles from "@/pages/battles";
@@ -15,15 +14,25 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Collaborations from "@/pages/collaborations";
 import Admin from "@/pages/admin";
+import SelectRole from "@/pages/select-role";
 import Navigation from "@/components/navigation";
 import MobileNav from "@/components/mobile-nav";
 import FloatingLogin from "@/components/floating-login";
 import { useAuth } from "@/hooks/useAuth";
 
+import { useEffect } from "react";
+import { useLocation } from "wouter";
+
 function Router() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [location, setLocation] = useLocation();
 
-  // Show loading screen while checking authentication (but only briefly)
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user && !user.role && location !== "/select-role") {
+      setLocation("/select-role");
+    }
+  }, [isLoading, isAuthenticated, user, location, setLocation]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark-100 text-white">
@@ -32,13 +41,10 @@ function Router() {
     );
   }
 
-  // Determine if we should show the floating login
   const shouldShowFloatingLogin = !isAuthenticated;
 
-  // Always show the main app, but overlay login widget if needed
   return (
     <div className="min-h-screen bg-dark-100 text-white">
-      {/* Main App - Always Visible */}
       <Navigation />
       <main className="pb-20 md:pb-0">
         <Switch>
@@ -50,16 +56,14 @@ function Router() {
           <Route path="/live" component={Live} />
           <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />
+          <Route path="/select-role" component={SelectRole} />
           <Route component={NotFound} />
         </Switch>
       </main>
       <MobileNav />
-
-      {/* Floating Login Overlay - Show when not authenticated */}
       {shouldShowFloatingLogin && (
         <FloatingLogin
           onSuccess={() => {
-            // The floating login component handles auth refresh - just force a re-render
             queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
           }}
         />

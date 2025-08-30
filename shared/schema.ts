@@ -19,7 +19,7 @@ export const users = pgTable("users", {
   firstName: text("first_name"), // From Replit profile
   lastName: text("last_name"), // From Replit profile
   profileImageUrl: text("profile_image_url"), // From Replit profile
-  role: text("role").notNull().default("fan"), // "artist", "producer", "fan", "admin"
+  role: text("role").notNull().default("fan"), // "artist", "producer", "fan", "admin", "beatmaker", "industryRep"
   displayName: text("display_name").notNull(),
   bio: text("bio"),
   avatar: text("avatar"), // Keep for backward compatibility
@@ -152,7 +152,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   avatar: true,
   isAdult: true,
 }).extend({
-  role: z.enum(["artist", "producer", "fan", "admin"]).optional(),
+  role: z.enum(["artist", "producer", "fan", "admin", "beatmaker", "industryRep"]).optional(),
   password: z.string().optional(), // Optional for Replit users
   username: z.string().optional(), // Optional for Replit users
 });

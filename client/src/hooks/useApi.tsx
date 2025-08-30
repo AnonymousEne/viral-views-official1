@@ -1,3 +1,28 @@
+// Update user profile
+export function useUpdateUserProfile() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  return useMutation({
+    mutationFn: async (updates: Partial<User>) => {
+      const response = await apiRequest('PATCH', '/api/users/profile', updates);
+      return await response.json() as User;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      toast({
+        title: 'Profile Updated',
+        description: 'Your profile has been updated successfully',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to update profile',
+        variant: 'destructive',
+      });
+    },
+  });
+}
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
