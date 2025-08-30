@@ -75,7 +75,7 @@ app.get('/api/beats', async (req, res) => {
   }
 });
 
-// Mock authentication endpoint
+// Mock authentication endpoints
 app.post('/api/auth/login', (req, res) => {
   res.json({ 
     success: true, 
@@ -88,7 +88,18 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
-// Mock current user endpoint
+// Mock current user endpoint - the frontend expects /api/auth/user
+app.get('/api/auth/user', (req, res) => {
+  res.json({ 
+    id: 'user-1', 
+    username: 'demo_artist', 
+    displayName: 'Demo Artist',
+    role: 'artist',
+    email: 'demo@example.com'
+  });
+});
+
+// Legacy endpoint for backward compatibility
 app.get('/api/auth/me', (req, res) => {
   res.json({ 
     id: 'user-1', 
