@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Play, Pause, Heart, Share2, Users, Clock } from 'lucide-react';
 import { useState } from 'react';
 import { useUpdateTrackPlays, useUpdateTrackLikes } from '@/hooks/useApi';
+import { usePlayerStore } from '@/hooks/usePlayerStore';
 import { cn } from '@/lib/utils';
 import type { Track } from '@shared/schema';
 
@@ -18,11 +19,34 @@ export default function TrackCard({ track, isPlaying = false, onPlayToggle, clas
   const [isLiked, setIsLiked] = useState(false);
   const updatePlays = useUpdateTrackPlays();
   const updateLikes = useUpdateTrackLikes();
+  const { currentTrack, isPlaying: globalIsPlaying, setCurrentTrack, play, pause } = usePlayerStore();
+
+  // Check if this track is currently playing in the global player
+  const isCurrentTrack = currentTrack?.id === track.id;
+  const isThisTrackPlaying = isCurrentTrack && globalIsPlaying;
 
   const handlePlayToggle = () => {
-    if (!isPlaying && onPlayToggle) {
+    if (isCurrentTrack) {
+      // If this track is already loaded, just toggle play/pause
+      if (globalIsPlaying) {
+        pause();
+      } else {
+        play();
+      }
+    } else {
+      // Load this track into the global player
+      setCurrentTrack({
+        id: track.id,
+        title: track.title,
+        artist: track.artistName,
+        audioUrl: track.audioUrl || '', // You might need to add audioUrl to your track schema
+        coverImage: track.coverImage || undefined
+      });
+      play();
       updatePlays.mutate(track.id);
     }
+    
+    // Call the optional onPlayToggle callback for backwards compatibility
     onPlayToggle?.();
   };
 
@@ -63,7 +87,7 @@ export default function TrackCard({ track, isPlaying = false, onPlayToggle, clas
               className="absolute inset-0 bg-black/60 hover:bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={handlePlayToggle}
             >
-              {isPlaying ? (
+              {isThisTrackPlaying ? (
                 <Pause className="w-5 h-5" />
               ) : (
                 <Play className="w-5 h-5" />

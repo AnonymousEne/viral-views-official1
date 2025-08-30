@@ -52,10 +52,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   playlist: [],
   currentIndex: -1,
   isShuffled: false,
-  repeatMode: 'none',
+  repeatMode: 'none' as const,
 
   // Actions
-  setCurrentTrack: (track) => {
+  setCurrentTrack: (track: Track) => {
     set({
       currentTrack: track,
       currentTime: 0,
@@ -64,7 +64,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     });
   },
 
-  setPlaylist: (tracks, startIndex = 0) => {
+  setPlaylist: (tracks: Track[], startIndex = 0) => {
     set({
       playlist: tracks,
       currentIndex: startIndex,
@@ -119,9 +119,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     });
   },
 
-  setCurrentTime: (time) => set({ currentTime: time }),
-  setDuration: (duration) => set({ duration }),
-  setVolume: (volume) => set({ volume, isMuted: volume === 0 }),
+  setCurrentTime: (time: number) => set({ currentTime: time }),
+  setDuration: (duration: number) => set({ duration }),
+  setVolume: (volume: number) => set({ volume, isMuted: volume === 0 }),
   
   toggleMute: () => {
     const { isMuted, volume } = get();

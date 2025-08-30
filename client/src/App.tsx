@@ -18,6 +18,14 @@ import SelectRole from "./pages/select-role";
 import Navigation from "./components/navigation";
 import MobileNav from "./components/mobile-nav";
 import FloatingLogin from "./components/floating-login";
+import GlobalMusicPlayer from "./components/music/global-music-player";
+
+// New feature components
+import EnhancedCollaborationTools from "./components/collaborations/enhanced-collaboration-tools";
+import ArtistMessaging from "./components/social-interactions/artist-messaging";
+import { LiveBattleRoomDemo } from "./components/live-battle-system/live-webrtc-manager";
+import GamificationSystem from "./components/gamification-system/enhanced-gamification";
+
 import { useAuth } from "./hooks/useAuth";
 
 import { useEffect } from "react";
@@ -51,6 +59,10 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/battles" component={Battles} />
           <Route path="/collaborations" component={Collaborations} />
+          <Route path="/collaboration-hub" component={EnhancedCollaborationTools} />
+          <Route path="/messages" component={ArtistMessaging} />
+          <Route path="/live-battle" component={LiveBattleRoomDemo} />
+          <Route path="/progress" component={GamificationSystem} />
           <Route path="/beats" component={Beats} />
           <Route path="/mixing" component={Mixing} />
           <Route path="/live" component={Live} />
@@ -61,6 +73,7 @@ function Router() {
         </Switch>
       </main>
       <MobileNav />
+      <GlobalMusicPlayer />
       {shouldShowFloatingLogin && (
         <FloatingLogin
           onSuccess={() => {

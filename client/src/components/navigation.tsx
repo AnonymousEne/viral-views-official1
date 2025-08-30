@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Music, Plus, LogOut, User, Shield } from "lucide-react";
+import { Music, Plus, LogOut, User, Shield, MessageCircle, Trophy, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -43,20 +43,20 @@ export default function Navigation() {
             }`} data-testid="nav-battles">
               Battles
             </Link>
-            <Link href="/mixing" className={`font-medium transition-colors ${
-              location === "/mixing" ? "text-white" : "text-gray-400 hover:text-purple-500"
-            }`} data-testid="nav-mixing">
-              Mix
-            </Link>
             <Link href="/beats" className={`font-medium transition-colors ${
               location === "/beats" ? "text-white" : "text-gray-400 hover:text-purple-500"
             }`} data-testid="nav-beats">
               Beats
             </Link>
-            <Link href="/collaborations" className={`font-medium transition-colors ${
-              location === "/collaborations" ? "text-white" : "text-gray-400 hover:text-purple-500"
-            }`} data-testid="nav-collaborations">
+            <Link href="/collaboration-hub" className={`font-medium transition-colors ${
+              location === "/collaboration-hub" ? "text-white" : "text-gray-400 hover:text-purple-500"
+            }`} data-testid="nav-collabs">
               Collabs
+            </Link>
+            <Link href="/messages" className={`font-medium transition-colors ${
+              location === "/messages" ? "text-white" : "text-gray-400 hover:text-purple-500"
+            }`} data-testid="nav-messages">
+              Messages
             </Link>
             <Link href="/live" className={`font-medium transition-colors ${
               location === "/live" ? "text-white" : "text-gray-400 hover:text-purple-500"
@@ -117,6 +117,18 @@ export default function Navigation() {
                   <DropdownMenuItem data-testid="menu-profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/progress">
+                  <DropdownMenuItem data-testid="menu-progress">
+                    <Trophy className="mr-2 h-4 w-4 text-electric-500" />
+                    <span>Progress & Achievements</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/live-battle">
+                  <DropdownMenuItem data-testid="menu-live-battle">
+                    <Zap className="mr-2 h-4 w-4 text-yellow-500" />
+                    <span>Live Battle Room</span>
                   </DropdownMenuItem>
                 </Link>
                 {user?.role === 'admin' && (
