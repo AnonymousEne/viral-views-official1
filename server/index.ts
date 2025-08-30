@@ -1,8 +1,33 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
+import { LRUCache } from "lru-cache";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+// Set up a simple LRU cache for API responses
+const apiCache = new LRUCache<string, any>({
+  max: 100, // max 100 items
+  ttl: 1000 * 60 * 5, // 5 minutes
+});
+
+// Example cache middleware for GET /api endpoints
+app.use((req, res, next) => {
+  if (req.method === "GET" && req.path.startsWith("/api")) {
+    const cacheKey = req.originalUrl;
+    const cached = apiCache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+    // Monkey-patch res.json to store the response in cache
+    const originalJson = res.json.bind(res);
+    res.json = (body: any) => {
+      apiCache.set(cacheKey, body);
+      return originalJson(body);
+    };
+  }
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
