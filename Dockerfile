@@ -11,6 +11,7 @@ RUN npm install --production
 # Copy client and server code
 COPY client ./client
 COPY server ./server
+COPY server/.env.production ./server/.env.production
 COPY shared ./shared
 
 # Build frontend
