@@ -1,0 +1,18 @@
+# .dockerignore
+node_modules
+client/node_modules
+server/node_modules
+client/coverage
+server/coverage
+client_backup
+server_backup
+*.test.ts
+*.test.tsx
+__tests__/
+__mocks__/
+.git
+.gitignore
+dist
+coverage
+.env*
+*.log
