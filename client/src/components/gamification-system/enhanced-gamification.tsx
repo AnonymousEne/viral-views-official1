@@ -14,7 +14,7 @@ import {
   Medal,
   Award,
   TrendingUp,
-  Fire,
+  Flame,
   Music,
   Mic,
   Users,
@@ -174,7 +174,7 @@ const mockAchievements: Achievement[] = [
     id: 'battle-streak-5',
     title: 'Hot Streak',
     description: 'Win 5 battles in a row',
-    icon: Fire,
+  icon: Flame,
     category: 'battles',
     tier: 'gold',
     points: 500,
@@ -692,7 +692,7 @@ function LeaderboardCard({ entry }: { entry: LeaderboardEntry }) {
               )}
               {entry.streak && (
                 <div className="flex items-center text-orange-500">
-                  <Fire className="w-3 h-3 mr-1" />
+                  <Flame className="w-3 h-3 mr-1" />
                   <span>{entry.streak}</span>
                 </div>
               )}
