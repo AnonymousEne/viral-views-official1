@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install root dependencies
+        run: npm install
+      - name: Install client dependencies
+        run: npm install
+        working-directory: ./client
+      - name: Install server dependencies
+        run: npm install
+        working-directory: ./server
+      - name: Initialize test database
+        run: npm run init-db
+        working-directory: ./server
+      - name: Run backend tests with coverage
+        run: npm test
+        working-directory: ./server
+      - name: Run frontend tests with coverage
+        run: npm test
+        working-directory: ./client
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./server/coverage/clover.xml,./client/coverage/clover.xml
+          fail_ci_if_error: true
+          verbose: true

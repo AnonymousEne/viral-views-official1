@@ -110,9 +110,14 @@ app.get('/api/auth/me', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Development server running at http://localhost:${PORT}`);
-  console.log(`📱 Client running at http://localhost:5173`);
-  console.log('✅ Database: SQLite (local development)');
-  console.log('🔧 Environment: Development');
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Development server running at http://localhost:${PORT}`);
+    console.log(`📱 Client running at http://localhost:5173`);
+    console.log('✅ Database: SQLite (local development)');
+    console.log('🔧 Environment: Development');
+  });
+}
+
+export default app;
