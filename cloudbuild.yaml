@@ -1,0 +1,21 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/viral-views-app:latest', '.']
+
+  # Push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/viral-views-app:latest']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - viral-views-app
+      - --image=gcr.io/$PROJECT_ID/viral-views-app:latest
+      - --region=us-central1
+      - --platform=managed
+      - --allow-unauthenticated
+      - --set-env-vars=NODE_ENV=production,PORT=3000,DATABASE_URL=file:./db/production.sqlite,SENDGRID_API_KEY=your_sendgrid_key,JWT_SECRET=your_jwt_secret
