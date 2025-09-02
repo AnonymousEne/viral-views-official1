@@ -17,9 +17,16 @@ export function useWebSocket() {
   useEffect(() => {
     if (!user) return;
 
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    
+    // Try to get JWT token from localStorage or cookie (customize as needed)
+    let token = '';
+    try {
+      token = localStorage.getItem('jwt_token') || '';
+    } catch {}
+    const wsUrl = token
+      ? `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`
+      : `${protocol}//${window.location.host}/ws`;
     const ws = new WebSocket(wsUrl);
     
     ws.onopen = () => {

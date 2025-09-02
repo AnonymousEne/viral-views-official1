@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: viral-views-app
+    env: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        value: file:./db/production.sqlite
+      - key: SENDGRID_API_KEY
+        value: your_sendgrid_key
+      - key: JWT_SECRET
+        value: your_jwt_secret
+    healthCheckPath: /api/health
+    autoDeploy: true
+    branch: main
+    repo: https://github.com/AnonymousEne/viral-views-official1

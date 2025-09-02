@@ -1,8 +1,15 @@
+// Extend WebSocket type to allow userId property
+declare module 'ws' {
+  interface WebSocket {
+    userId?: string;
+  }
+}
 
 
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
+import jwt from "jsonwebtoken";
 import { storage } from "./storage";
 import { z } from "zod";
 import multer from "multer";
@@ -90,37 +97,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File upload endpoints
+  // Hardened: Audio upload with Zod validation and error handling
   app.post("/api/upload/audio", isAuthenticated, upload.single('audio'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No audio file provided" });
       }
-
       const userId = req.user.claims.sub;
       const file = req.file;
       const fileExtension = extname(file.originalname);
       const timestamp = Date.now();
       const filename = `audio_${userId}_${timestamp}${fileExtension}`;
       const filepath = join(uploadsDir, filename);
-
-      // Save file to local storage (uploads directory)
       await writeFile(filepath, file.buffer);
-
-      // Create file record in database
-      const fileData = insertFileSchema.parse({
-        originalName: file.originalname,
-        fileName: filename,
-        filePath: `/uploads/${filename}`,
-        fileSize: file.size,
-        mimeType: file.mimetype,
-        fileType: 'audio',
-        directory: 'tracks',
-        uploadedBy: userId,
-        isPublic: true
-      });
-
+      // Validate file data
+      let fileData;
+      try {
+        fileData = insertFileSchema.parse({
+          originalName: file.originalname,
+          fileName: filename,
+          filePath: `/uploads/${filename}`,
+          fileSize: file.size,
+          mimeType: file.mimetype,
+          fileType: 'audio',
+          directory: 'tracks',
+          uploadedBy: userId,
+          isPublic: true
+        });
+      } catch (err) {
+        return res.status(400).json({ error: "Invalid file data" });
+      }
       const savedFile = await storage.createFile(fileData);
-      
       res.json({
         id: savedFile.id,
         filename: filename,
@@ -134,37 +141,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Hardened: Video upload with Zod validation and error handling
   app.post("/api/upload/video", isAuthenticated, upload.single('video'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No video file provided" });
       }
-
       const userId = req.user.claims.sub;
       const file = req.file;
       const fileExtension = extname(file.originalname);
       const timestamp = Date.now();
       const filename = `video_${userId}_${timestamp}${fileExtension}`;
       const filepath = join(uploadsDir, filename);
-
-      // Save file to local storage
       await writeFile(filepath, file.buffer);
-
-      // Create file record in database
-      const fileData = insertFileSchema.parse({
-        originalName: file.originalname,
-        fileName: filename,
-        filePath: `/uploads/${filename}`,
-        fileSize: file.size,
-        mimeType: file.mimetype,
-        fileType: 'video',
-        directory: 'videos',
-        uploadedBy: userId,
-        isPublic: true
-      });
-
+      // Validate file data
+      let fileData;
+      try {
+        fileData = insertFileSchema.parse({
+          originalName: file.originalname,
+          fileName: filename,
+          filePath: `/uploads/${filename}`,
+          fileSize: file.size,
+          mimeType: file.mimetype,
+          fileType: 'video',
+          directory: 'videos',
+          uploadedBy: userId,
+          isPublic: true
+        });
+      } catch (err) {
+        return res.status(400).json({ error: "Invalid file data" });
+      }
       const savedFile = await storage.createFile(fileData);
-      
       res.json({
         id: savedFile.id,
         filename: filename,
@@ -178,37 +185,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Hardened: Image upload with Zod validation and error handling
   app.post("/api/upload/image", isAuthenticated, upload.single('image'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No image file provided" });
       }
-
       const userId = req.user.claims.sub;
       const file = req.file;
       const fileExtension = extname(file.originalname);
       const timestamp = Date.now();
       const filename = `image_${userId}_${timestamp}${fileExtension}`;
       const filepath = join(uploadsDir, filename);
-
-      // Save file to local storage
       await writeFile(filepath, file.buffer);
-
-      // Create file record in database
-      const fileData = insertFileSchema.parse({
-        originalName: file.originalname,
-        fileName: filename,
-        filePath: `/uploads/${filename}`,
-        fileSize: file.size,
-        mimeType: file.mimetype,
-        fileType: 'image',
-        directory: 'covers',
-        uploadedBy: userId,
-        isPublic: true
-      });
-
+      // Validate file data
+      let fileData;
+      try {
+        fileData = insertFileSchema.parse({
+          originalName: file.originalname,
+          fileName: filename,
+          filePath: `/uploads/${filename}`,
+          fileSize: file.size,
+          mimeType: file.mimetype,
+          fileType: 'image',
+          directory: 'covers',
+          uploadedBy: userId,
+          isPublic: true
+        });
+      } catch (err) {
+        return res.status(400).json({ error: "Invalid file data" });
+      }
       const savedFile = await storage.createFile(fileData);
-      
       res.json({
         id: savedFile.id,
         filename: filename,
@@ -440,31 +447,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
 
-  wss.on('connection', (ws) => {
-    console.log('Client connected to WebSocket');
+  // Helper: Authenticate WebSocket connection using JWT token in query string
+  function authenticateWebSocket(ws: WebSocket, req: any): { userId?: string, error?: string } {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const token = url.searchParams.get('token');
+      if (!token) return { error: 'Missing auth token' };
+      // Replace 'your_jwt_secret' with your real secret or env var
+      const payload = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+      return { userId: payload.sub };
+    } catch (err) {
+      return { error: 'Invalid or expired token' };
+    }
+  }
+
+  wss.on('connection', (ws, req) => {
+    // Authenticate connection
+    const auth = authenticateWebSocket(ws, req);
+    if (auth.error) {
+      ws.send(JSON.stringify({ type: 'error', message: auth.error }));
+      ws.close();
+      return;
+    }
+    ws.userId = auth.userId;
+    console.log(`WebSocket client connected: userId=${auth.userId}`);
 
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message.toString());
-        
-        // Handle different message types
+        // Basic message validation
+        if (!data.type) throw new Error('Missing message type');
+
         switch (data.type) {
           case 'join_battle':
-            // Broadcast to all clients about new battle participant
+            if (!data.battleId) throw new Error('Missing battleId');
             wss.clients.forEach((client) => {
               if (client !== ws && client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({
                   type: 'battle_update',
                   battleId: data.battleId,
                   action: 'participant_joined',
-                  userId: data.userId
+                  userId: ws.userId
                 }));
               }
             });
             break;
-
           case 'vote_cast':
-            // Broadcast vote updates
+            if (!data.battleId || !data.contestantId || typeof data.voteCount !== 'number') throw new Error('Invalid vote_cast payload');
             wss.clients.forEach((client) => {
               if (client !== ws && client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({
@@ -476,17 +505,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             });
             break;
-
           default:
-            console.log('Unknown message type:', data.type);
+            ws.send(JSON.stringify({ type: 'error', message: 'Unknown message type' }));
         }
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        let message = 'Invalid message';
+        if (error instanceof Error) message = error.message;
+        ws.send(JSON.stringify({ type: 'error', message }));
       }
     });
 
     ws.on('close', () => {
-      console.log('Client disconnected from WebSocket');
+      console.log(`WebSocket client disconnected: userId=${ws.userId}`);
     });
   });
 
