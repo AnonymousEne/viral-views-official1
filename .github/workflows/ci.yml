@@ -9,6 +9,11 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    services:
+      sqlite:
+        image: nouchka/sqlite3:latest
+        ports:
+          - 3306:3306
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -26,10 +31,10 @@ jobs:
       - name: Initialize test database
         run: npm run init-db
         working-directory: ./server
-      - name: Run backend tests with coverage
+      - name: Run backend tests
         run: npm test
         working-directory: ./server
-      - name: Run frontend tests with coverage
+      - name: Run frontend tests
         run: npm test
         working-directory: ./client
       - name: Upload coverage reports to Codecov
