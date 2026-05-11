@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Zap, Plus, Music, User, MessageCircle } from "lucide-react";
+import { Home, Zap, Plus, Music, User, MessageCircle, Sparkles } from "lucide-react";
 
 export default function MobileNav() {
   const [location] = useLocation();
@@ -49,6 +49,13 @@ export default function MobileNav() {
           <div className="flex flex-col items-center py-2 px-1" data-testid="mobile-nav-collaborations">
             <User className={`text-lg mb-1 ${location === "/collaboration-hub" ? "text-purple-500" : "text-gray-400"}`} />
             <span className={`text-xs ${location === "/collaboration-hub" ? "text-purple-500" : "text-gray-400"}`}>Collabs</span>
+          </div>
+        </Link>
+
+        <Link href="/lyric-generator">
+          <div className="flex flex-col items-center py-2 px-1" data-testid="mobile-nav-lyrics">
+            <Sparkles className={`text-lg mb-1 ${location === "/lyric-generator" ? "text-electric-500" : "text-gray-400"}`} />
+            <span className={`text-xs ${location === "/lyric-generator" ? "text-electric-500" : "text-gray-400"}`}>Lyrics</span>
           </div>
         </Link>
       </div>

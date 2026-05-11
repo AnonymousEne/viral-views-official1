@@ -19,6 +19,7 @@ import Navigation from "./components/navigation";
 import MobileNav from "./components/mobile-nav";
 import FloatingLogin from "./components/floating-login";
 import GlobalMusicPlayer from "./components/music/global-music-player";
+import LyricGenerator from "./pages/lyric-generator";
 
 // New feature components
 import EnhancedCollaborationTools from "./components/collaborations/enhanced-collaboration-tools";
@@ -69,6 +70,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />
           <Route path="/select-role" component={SelectRole} />
+          <Route path="/lyric-generator" component={LyricGenerator} />
           <Route component={NotFound} />
         </Switch>
       </main>

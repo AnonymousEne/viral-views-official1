@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Music, Plus, LogOut, User, Shield, MessageCircle, Trophy, Users, Zap } from "lucide-react";
+import { Music, Plus, LogOut, User, Shield, MessageCircle, Trophy, Users, Zap, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -62,6 +62,11 @@ export default function Navigation() {
               location === "/live" ? "text-white" : "text-gray-400 hover:text-purple-500"
             }`} data-testid="nav-live">
               Live
+            </Link>
+            <Link href="/lyric-generator" className={`font-medium transition-colors flex items-center gap-1 ${
+              location === "/lyric-generator" ? "text-white" : "text-gray-400 hover:text-purple-500"
+            }`} data-testid="nav-lyric-generator">
+              <Sparkles className="h-3.5 w-3.5" /> Lyrics
             </Link>
             {user?.role === 'admin' && (
               <Link href="/admin" className={`font-medium transition-colors ${
