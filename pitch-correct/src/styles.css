@@ -1,14 +1,64 @@
+/*
+  Design language: a hardware tuner/DAW console, not a generic dark SaaS
+  panel. Three accents carry distinct meaning rather than decoration:
+    - target (cool cyan)  = the reference MIDI pitch
+    - sung   (warm coral) = the singer's own detected pitch
+    - action (amber)      = interactive/primary controls, echoing a tuner
+                             needle or VU meter light
+  Numeric/technical readouts (note names, semitone offsets, timestamps,
+  match counts) use a monospace face with tabular numerals, like an LCD
+  readout on real tuning hardware - UI copy stays in a plain sans face.
+*/
+
 :root {
+  --bg: #0a0d13;
+  --panel: #12161f;
+  --panel-raised: #171c27;
+  --border: #232a38;
+  --text: #eef1f6;
+  --muted: #7c8aa0;
+  --accent-target: #5ac8fa;
+  --accent-sung: #ff5d73;
+  --accent-action: #f2b544;
+  --accent-action-ink: #241703;
+  --danger: #e0485f;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+
   color-scheme: dark;
-  --bg: #0e0f14;
-  --panel: #171922;
-  --border: #2a2d3a;
-  --text: #e8e9f0;
-  --muted: #9497a8;
-  --accent: #5ac8fa;
-  --accent-2: #ff5d73;
-  --danger: #e04858;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --panel-raised: #eef2f6;
+  --border: #d8dee6;
+  --text: #10151d;
+  --muted: #57647a;
+  --accent-target: #0f8fcf;
+  --accent-sung: #d43f56;
+  --accent-action: #a86a06;
+  --accent-action-ink: #fff8ea;
+  --danger: #c62f42;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --panel-raised: #eef2f6;
+    --border: #d8dee6;
+    --text: #10151d;
+    --muted: #57647a;
+    --accent-target: #0f8fcf;
+    --accent-sung: #d43f56;
+    --accent-action: #a86a06;
+    --accent-action-ink: #fff8ea;
+    --danger: #c62f42;
+    color-scheme: light;
+  }
 }
 
 * {
@@ -19,28 +69,45 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
+  font-family: var(--font-ui);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  .tab {
+    transition: background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-action);
+  outline-offset: 2px;
 }
 
 .app {
   max-width: 880px;
   margin: 0 auto;
-  padding: 32px 20px 80px;
+  padding: 40px 20px 80px;
 }
 
 header h1 {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   font-size: 28px;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .subtitle {
   color: var(--muted);
-  margin: 0 0 20px;
+  margin: 0 0 24px;
+  max-width: 60ch;
+  line-height: 1.5;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 4px;
+  margin-bottom: 28px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -50,29 +117,31 @@ header h1 {
   color: var(--muted);
   padding: 10px 16px;
   font-size: 14px;
+  font-family: var(--font-ui);
   cursor: pointer;
   border-bottom: 2px solid transparent;
 }
 
 .tab.active {
   color: var(--text);
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--accent-action);
 }
 
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 20px;
   margin-bottom: 16px;
 }
 
 .panel h2 {
-  margin: 0 0 12px;
-  font-size: 15px;
+  margin: 0 0 14px;
+  font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--muted);
+  font-weight: 600;
 }
 
 .row {
@@ -83,13 +152,14 @@ header h1 {
 }
 
 .btn {
-  background: var(--accent);
-  color: #04202b;
-  border: none;
-  border-radius: 8px;
+  background: var(--panel-raised);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 7px;
   padding: 10px 18px;
   font-weight: 600;
   font-size: 14px;
+  font-family: var(--font-ui);
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
@@ -98,24 +168,24 @@ header h1 {
 }
 
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .btn.secondary {
   background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
 }
 
 .btn.danger {
   background: var(--danger);
-  color: white;
+  border-color: var(--danger);
+  color: #fff;
 }
 
 .btn.primary {
-  background: var(--accent-2);
-  color: #2a0a0e;
+  background: var(--accent-action);
+  border-color: var(--accent-action);
+  color: var(--accent-action-ink);
   padding: 12px 24px;
   font-size: 15px;
 }
@@ -129,7 +199,9 @@ header h1 {
 .summary,
 .meta {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   margin-top: 10px;
 }
 
@@ -152,8 +224,9 @@ header h1 {
 
 .ab-label {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
   margin: 0 0 6px;
 }
 
@@ -164,7 +237,8 @@ header h1 {
 .timeline canvas {
   width: 100%;
   border-radius: 8px;
-  background: #0a0b10;
+  background: var(--bg);
+  border: 1px solid var(--border);
 }
 
 .legend {
@@ -184,15 +258,23 @@ header h1 {
 }
 
 .swatch.target {
-  background: rgba(90, 200, 250, 0.8);
+  background: var(--accent-target);
 }
 
 .swatch.sung {
-  background: var(--accent-2);
+  background: var(--accent-sung);
 }
 
 .live-status {
   font-size: 13px;
-  color: var(--muted);
-  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--accent-action);
+  background: var(--panel-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  display: inline-block;
 }

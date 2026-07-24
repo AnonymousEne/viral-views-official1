@@ -1,5 +1,9 @@
 import type { PitchFrame, SungNote } from "./types";
 import { hzToMidi } from "./types";
+// `?worker&inline` bundles the worker as an inlined base64 data URL instead
+// of a separate chunk, so the whole app (including this worker) can ship as
+// a single self-contained HTML file.
+import PitchWorker from "./pitchWorker?worker&inline";
 
 export interface PitchDetectOptions {
   frameSize: number;
@@ -240,7 +244,7 @@ export function detectPitchTrackAsync(
   }
 
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL("./pitchWorker.ts", import.meta.url), { type: "module" });
+    const worker = new PitchWorker();
     worker.onmessage = (event: MessageEvent<{ frames: PitchFrame[] }>) => {
       resolve(event.data.frames);
       worker.terminate();

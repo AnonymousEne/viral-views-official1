@@ -31,6 +31,14 @@ export function PitchTimeline({ targetNotes, pitchFrames, height = 260 }: PitchT
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
+    // Canvas can't read CSS custom properties directly, so pull the active
+    // theme's colors at draw time - keeps the chart in sync when the viewer
+    // toggles light/dark.
+    const computed = getComputedStyle(document.documentElement);
+    const gridColor = computed.getPropertyValue("--border").trim() || "#232a38";
+    const targetColor = computed.getPropertyValue("--accent-target").trim() || "#5ac8fa";
+    const sungColor = computed.getPropertyValue("--accent-sung").trim() || "#ff5d73";
+
     const duration = Math.max(
       1,
       targetNotes.length ? targetNotes[targetNotes.length - 1].endTime : 0,
@@ -49,7 +57,7 @@ export function PitchTimeline({ targetNotes, pitchFrames, height = 260 }: PitchT
     const yForMidi = (m: number) => height - ((m - minMidi) / midiRange) * height;
 
     // Background gridlines every octave.
-    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
     for (let m = Math.ceil(minMidi / 12) * 12; m <= maxMidi; m += 12) {
       const y = yForMidi(m);
@@ -60,16 +68,18 @@ export function PitchTimeline({ targetNotes, pitchFrames, height = 260 }: PitchT
     }
 
     // Target MIDI notes as piano-roll bars.
-    ctx.fillStyle = "rgba(90, 200, 250, 0.55)";
+    ctx.fillStyle = targetColor;
+    ctx.globalAlpha = 0.6;
     for (const note of targetNotes) {
       const x = xForTime(note.startTime);
       const w = Math.max(1, xForTime(note.endTime) - x);
       const y = yForMidi(note.midi) - 4;
       ctx.fillRect(x, y, w, 8);
     }
+    ctx.globalAlpha = 1;
 
     // Detected sung pitch curve.
-    ctx.strokeStyle = "#ff5d73";
+    ctx.strokeStyle = sungColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
     let drawing = false;
