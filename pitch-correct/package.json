@@ -1,0 +1,35 @@
+{
+  "name": "pitch-correct",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Standalone audio pitch correction app: snaps a sung vocal take's pitch and timing onto a reference MIDI melody.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:singlefile": "tsc --noEmit && vite build --config vite.singlefile.config.ts && node scripts/fix-replacement-char.mjs dist-singlefile/index.html",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "node test/run-e2e.mjs",
+    "test:ui": "node test/run-ui.mjs",
+    "test:live": "node test/run-live.mjs"
+  },
+  "dependencies": {
+    "@tonejs/midi": "^2.0.28",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "signalsmith-stretch": "^1.3.2",
+    "wavefile": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^5.0.2",
+    "playwright": "^1.55.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^2.1.9"
+  }
+}
