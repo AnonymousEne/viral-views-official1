@@ -11,6 +11,14 @@
 //                   (skipped notes, ad-libs, severe under/over-singing)
 //   loopcheck.html - the loop-to-sustain fallback for a short sung note
 //                    matched to a much longer target note
+//   capacity.html  - guards the safety margin against signalsmith-stretch's
+//                    undocumented internal schedule-queue capacity limit
+//   manynotes.html - a real-world-scale plan (well past the single-chunk
+//                    limit) renders correctly-pitched audio across its
+//                    *entire* duration, not just the start - regression
+//                    test for a real bug found against a real 4.5-minute
+//                    song that rendered ~97% silent before chunked
+//                    rendering was added (see correctionEngine.ts)
 //
 // Usage: node test/run-e2e.mjs
 // Env:   PLAYWRIGHT_CHROMIUM_PATH - explicit path to a Chromium binary,
@@ -27,7 +35,7 @@ const viteBin = path.join(__dirname, "..", "node_modules", ".bin", "vite");
 const PORT = 5183 + Math.floor(Math.random() * 1000);
 const BASE_URL = `http://localhost:${PORT}`;
 
-const PAGES = ["harness.html", "accuracy.html", "stress.html", "loopcheck.html"];
+const PAGES = ["harness.html", "accuracy.html", "stress.html", "loopcheck.html", "capacity.html", "manynotes.html"];
 
 async function waitForServer(url, timeoutMs) {
   const deadline = Date.now() + timeoutMs;

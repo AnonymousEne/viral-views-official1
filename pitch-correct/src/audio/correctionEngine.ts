@@ -1,6 +1,6 @@
 import SignalsmithStretch from "signalsmith-stretch";
 import type { StretchSchedulePoint } from "signalsmith-stretch";
-import type { CorrectionPlan } from "./types";
+import type { CorrectionPlan, CorrectionSegment } from "./types";
 
 export interface CorrectionEngineOptions {
   /** Extra silence appended after the last target note, in seconds. */
@@ -14,41 +14,70 @@ export interface CorrectionEngineOptions {
    * this is a hard ceiling, not a target.
    */
   maxStretchRate: number;
+  /**
+   * Max matched segments rendered through a single stretch-node instance.
+   * signalsmith-stretch has an undocumented, fixed-size internal queue for
+   * pending schedule() calls - empirically ~24 (see test/capacity.ts):
+   * scheduling a 25th point before the engine has "consumed" (played
+   * through) any of the previous ones silently evicts the entire backlog,
+   * leaving everything before it silent. Since offline rendering schedules
+   * the whole plan up front - nothing is ever "consumed" before rendering
+   * starts - any plan with more matched notes than this limit would
+   * silently lose almost all of its audio. Kept safely under the observed
+   * limit. Longer takes render in multiple chunks (each its own fresh node)
+   * that get concatenated; see renderCorrectedAudio.
+   */
+  maxSegmentsPerChunk: number;
 }
 
 export const DEFAULT_ENGINE_OPTIONS: CorrectionEngineOptions = {
   tailPadding: 0.5,
   gapFade: 0.01,
   maxStretchRate: 3,
+  maxSegmentsPerChunk: 16,
 };
 
-/**
- * Render the input recording into a corrected buffer whose pitch and timing
- * follow `plan` (built by `buildCorrectionPlan`): each matched segment is
- * time-stretched to fill its exact target window and pitch-shifted onto the
- * target note, using the Signalsmith Stretch WASM engine. Anything outside
- * a matched segment (lead-in, trailing audio, MIDI rests) renders as silence
- * so the output timing follows the reference MIDI exactly.
- *
- * NOTE: silence gaps are implemented with a downstream GainNode rather than
- * the stretch node's own `active: false` schedule flag. Empirically (see
- * test/harness3), scheduling `active: false` mid-stream on this node
- * silences the *entire* render, not just the region after that point - a
- * bug/quirk in signalsmith-stretch. The stretch node is kept `active: true`
- * for the whole render; muting is done natively via AudioParam automation.
- */
-export async function renderCorrectedAudio(
+interface RenderChunk {
+  /** This chunk's start time on the global output timeline, in seconds. */
+  startOffset: number;
+  /** This chunk's length in samples. */
+  length: number;
+  /** Segments belonging to this chunk, still in global output-time coordinates. */
+  segments: CorrectionSegment[];
+}
+
+function planChunks(plan: CorrectionPlan, opts: CorrectionEngineOptions, sampleRate: number): RenderChunk[] {
+  const totalOutputSeconds = Math.max(plan.outputDuration, 0) + opts.tailPadding;
+
+  if (plan.segments.length === 0) {
+    return [{ startOffset: 0, length: Math.max(1, Math.ceil(totalOutputSeconds * sampleRate)), segments: [] }];
+  }
+
+  const chunks: RenderChunk[] = [];
+  let idx = 0;
+  let prevEnd = 0;
+  while (idx < plan.segments.length) {
+    const group = plan.segments.slice(idx, idx + opts.maxSegmentsPerChunk);
+    idx += group.length;
+    const isLastChunk = idx >= plan.segments.length;
+    const chunkGlobalEnd = isLastChunk ? totalOutputSeconds : group[group.length - 1].outEnd;
+    const startOffset = prevEnd;
+    const length = Math.max(1, Math.round((chunkGlobalEnd - startOffset) * sampleRate));
+    chunks.push({ startOffset, length, segments: group });
+    prevEnd = startOffset + length / sampleRate;
+  }
+  return chunks;
+}
+
+async function renderChunk(
   input: AudioBuffer,
-  plan: CorrectionPlan,
-  options: Partial<CorrectionEngineOptions> = {},
+  chunk: RenderChunk,
+  opts: CorrectionEngineOptions,
 ): Promise<AudioBuffer> {
-  const opts = { ...DEFAULT_ENGINE_OPTIONS, ...options };
   const sampleRate = input.sampleRate;
   const numberOfChannels = input.numberOfChannels;
-  const outputSeconds = Math.max(plan.outputDuration, 0) + opts.tailPadding;
-  const length = Math.max(1, Math.ceil(outputSeconds * sampleRate));
 
-  const offlineCtx = new OfflineAudioContext(numberOfChannels, length, sampleRate);
+  const offlineCtx = new OfflineAudioContext(numberOfChannels, chunk.length, sampleRate);
 
   const node = await SignalsmithStretch(offlineCtx, {
     numberOfInputs: 1,
@@ -65,14 +94,75 @@ export async function renderCorrectedAudio(
   const gain = offlineCtx.createGain();
   node.connect(gain);
   gain.connect(offlineCtx.destination);
-  applyGainAutomation(gain, plan, opts.gapFade);
 
-  const schedulePoints = buildSchedule(plan, opts.maxStretchRate);
+  // Re-express this chunk's segments in local (chunk-relative) output time
+  // so the existing, already-verified buildSchedule/applyGainAutomation
+  // logic - written for a single, whole-plan render - works unchanged.
+  // Clamped to >= 0: the first segment's outStart should land at exactly
+  // local 0, but float subtraction can leave a tiny negative epsilon
+  // (e.g. -0.000005), which AudioParam methods reject outright.
+  const localPlan: CorrectionPlan = {
+    segments: chunk.segments.map((s) => ({
+      ...s,
+      outStart: Math.max(0, s.outStart - chunk.startOffset),
+      outEnd: Math.max(0, s.outEnd - chunk.startOffset),
+    })),
+    outputDuration: chunk.length / sampleRate,
+  };
+
+  applyGainAutomation(gain, localPlan, opts.gapFade);
+
+  const schedulePoints = buildSchedule(localPlan, opts.maxStretchRate);
   for (const point of schedulePoints) {
     await node.schedule(point);
   }
 
   return offlineCtx.startRendering();
+}
+
+/**
+ * Render the input recording into a corrected buffer whose pitch and timing
+ * follow `plan` (built by `buildCorrectionPlan`): each matched segment is
+ * time-stretched to fill its exact target window and pitch-shifted onto the
+ * target note, using the Signalsmith Stretch WASM engine. Anything outside
+ * a matched segment (lead-in, trailing audio, MIDI rests) renders as silence
+ * so the output timing follows the reference MIDI exactly.
+ *
+ * Rendered in chunks of at most `maxSegmentsPerChunk` matched notes, each
+ * through its own fresh stretch-node instance, then concatenated - see the
+ * doc comment on that option for why (a hard, undocumented capacity limit
+ * in the underlying WASM engine).
+ *
+ * NOTE: silence gaps are implemented with a downstream GainNode rather than
+ * the stretch node's own `active: false` schedule flag. Empirically (see
+ * test/harness3), scheduling `active: false` mid-stream on this node
+ * silences the *entire* render, not just the region after that point - a
+ * bug/quirk in signalsmith-stretch. The stretch node is kept `active: true`
+ * for the whole render; muting is done natively via AudioParam automation.
+ */
+export async function renderCorrectedAudio(
+  input: AudioBuffer,
+  plan: CorrectionPlan,
+  options: Partial<CorrectionEngineOptions> = {},
+): Promise<AudioBuffer> {
+  const opts = { ...DEFAULT_ENGINE_OPTIONS, ...options };
+  const sampleRate = input.sampleRate;
+  const numberOfChannels = input.numberOfChannels;
+
+  const chunks = planChunks(plan, opts, sampleRate);
+  const totalLength = chunks.reduce((sum, c) => sum + c.length, 0);
+  const finalBuffer = new AudioBuffer({ numberOfChannels, length: totalLength, sampleRate });
+
+  let sampleOffset = 0;
+  for (const chunk of chunks) {
+    const chunkBuffer = await renderChunk(input, chunk, opts);
+    for (let ch = 0; ch < numberOfChannels; ch++) {
+      finalBuffer.copyToChannel(chunkBuffer.getChannelData(ch), ch, sampleOffset);
+    }
+    sampleOffset += chunk.length;
+  }
+
+  return finalBuffer;
 }
 
 /**

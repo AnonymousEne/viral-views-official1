@@ -77,6 +77,39 @@ upload works everywhere, including the embedded preview.
   too-short sources loop instead of stretching. Verified against the real
   WASM engine in `test/loopcheck.ts` and stress-tested against several
   sung/target mismatch shapes in `test/stress.ts`.
+- **Sung-note over-splitting into sub-millisecond fragments (real bug,
+  fixed).** When one short sung note got DTW-matched to many target notes
+  (routine when the MIDI reference is much denser than the actual take -
+  e.g. an auto-transcribed reference with hundreds of notes against a
+  singer who produced far fewer), `align.ts` used to slice that note's
+  audio *proportionally* across all of them. With a large target:sung
+  ratio this produced source fragments under a single millisecond -
+  shorter than one pitch period for any vocal frequency, so the stretch
+  engine had no coherent waveform to loop or shift, rendering silence or
+  buzzing garbage. Found against a real ~4.5 minute song (610 dense
+  auto-transcribed target notes, 169 actual sung notes): 336 of 610
+  segments had source fragments under 20ms, some under 1ms. Fixed by
+  reusing the *whole* sung note for every target it's matched to instead
+  of slicing it, and leaning on the loop/clamp handling above for whatever
+  duration mismatch results per target - the same "hold this syllable
+  across these notes" a human engineer would do by ear.
+- **signalsmith-stretch's internal schedule queue silently drops events
+  past ~24 pending (real bug, fixed - the big one).** The engine has an
+  undocumented, fixed-size internal queue for pending `schedule()` calls.
+  Scheduling a point before the engine has "consumed" (played through) an
+  earlier one - which is exactly what happens in offline rendering, since
+  the whole plan is scheduled up front before `startRendering()` ever
+  runs - silently evicts the entire earlier backlog once the queue fills,
+  with no error, no rejected promise, nothing. On the same real song
+  above (610 matched notes), only the *last ~15* scheduled points survived
+  and rendered; the preceding ~97% of the song was pure silence. Bisected
+  the exact capacity empirically (`git log` for the original N=5..200
+  sweep) and fixed by rendering in chunks of `maxSegmentsPerChunk` (16,
+  safely under the ~24 limit) - each chunk gets its own fresh stretch-node
+  instance, and the resulting buffers are concatenated. `capacity.ts`
+  guards the safety margin; `manynotes.ts` regression-tests that a
+  real-world-scale plan renders correct audio across its *entire*
+  duration, not just the first chunk.
 - **`signalsmith-stretch`'s `active: false` bug.** Calling
   `AudioWorkletNode.schedule({active: false, ...})` *after* an earlier
   `active: true` schedule point silences the **entire** render, not just
@@ -108,7 +141,7 @@ npm run test:ui          # (see below) drives the real UI with real file uploads
 npm run test:live        # (see below) drives the real Live Monitor tab with a fake mic
 ```
 
-`test:e2e` boots its own Vite dev server and runs four browser-based
+`test:e2e` boots its own Vite dev server and runs six browser-based
 pages in headless Chromium (calling the audio modules directly, not the
 UI):
 - `harness.html` — full MIDI → pitch-detect → align → render pipeline
@@ -120,6 +153,11 @@ UI):
   (skipped notes, ad-libs, severe under/over-singing).
 - `loopcheck.html` — the loop-to-sustain fallback for a short sung note
   matched to a much longer target note.
+- `capacity.html` — guards the safety margin against signalsmith-stretch's
+  undocumented internal schedule-queue capacity limit.
+- `manynotes.html` — a real-world-scale plan (well past the single-chunk
+  limit) renders correctly-pitched audio across its *entire* duration;
+  this is what caught the schedule-queue bug above.
 
 `npm run test:ui` goes one level up: it generates real WAV/MIDI fixture
 files, serves the actual `dist-singlefile/index.html` production build

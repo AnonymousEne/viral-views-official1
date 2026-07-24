@@ -90,33 +90,26 @@ export function buildCorrectionPlan(sung: SungNote[], target: TargetNote[]): Cor
     if (bySung[i][bySung[i].length - 1] !== j) bySung[i].push(j);
   }
 
-  // For a sung note that spans multiple target notes, split its source time
-  // range proportionally (by each target's duration) across those targets,
-  // in temporal order, instead of replaying the same audio for each.
-  const subRange = new Map<string, { start: number; end: number }>();
-  for (let i = 0; i < sung.length; i++) {
-    const targets = bySung[i];
-    if (targets.length <= 1) continue;
-    const note = sung[i];
-    const totalTargetDur = targets.reduce((sum, j) => sum + (target[j].endTime - target[j].startTime), 0);
-    const noteDur = note.endTime - note.startTime;
-    let cursor = note.startTime;
-    for (const j of targets) {
-      const frac = totalTargetDur > 0 ? (target[j].endTime - target[j].startTime) / totalTargetDur : 1 / targets.length;
-      const dur = noteDur * frac;
-      subRange.set(`${i}:${j}`, { start: cursor, end: cursor + dur });
-      cursor += dur;
-    }
-  }
-
-  const rangeFor = (i: number, j: number) => subRange.get(`${i}:${j}`) ?? { start: sung[i].startTime, end: sung[i].endTime };
+  // A sung note can span multiple target notes when the target has far more
+  // notes than the singer actually produced (a dense auto-transcribed MIDI
+  // reference against a much sparser vocal take is a common real case).
+  // Each of those targets reuses the sung note's *full* range rather than a
+  // proportionally-divided slice of it: slicing a short note across dozens
+  // of targets produces sub-millisecond fragments - shorter than a single
+  // pitch period - which the stretch engine cannot loop or shift into
+  // anything but silence or buzzing garbage. Reusing the whole note and
+  // leaning on the correction engine's existing loop/clamp handling (for
+  // whatever duration mismatch results) is both simpler and correct: it's
+  // the same "hold this syllable across these notes" behavior a human
+  // pitch-correction engineer would reach for.
+  const rangeFor = (i: number) => ({ start: sung[i].startTime, end: sung[i].endTime });
 
   const segments: CorrectionSegment[] = [];
   for (let j = 0; j < target.length; j++) {
     const sungIndices = byTarget[j];
     if (sungIndices.length === 0) continue;
 
-    const ranges = sungIndices.map((i) => rangeFor(i, j));
+    const ranges = sungIndices.map((i) => rangeFor(i));
     const sungStart = Math.min(...ranges.map((r) => r.start));
     const sungEnd = Math.max(...ranges.map((r) => r.end));
 
@@ -125,7 +118,7 @@ export function buildCorrectionPlan(sung: SungNote[], target: TargetNote[]): Cor
     let dominant = sungIndices[0];
     let dominantDur = -Infinity;
     for (const i of sungIndices) {
-      const r = rangeFor(i, j);
+      const r = rangeFor(i);
       const dur = r.end - r.start;
       if (dur > dominantDur) {
         dominantDur = dur;
