@@ -105,6 +105,7 @@ npm run build            # normal multi-file production build -> dist/
 npm run build:singlefile # single self-contained HTML file -> dist-singlefile/
 npm run test:e2e         # pipeline smoke test in headless Chromium
 npm run test:ui          # (see below) drives the real UI with real file uploads
+npm run test:live        # (see below) drives the real Live Monitor tab with a fake mic
 ```
 
 `test:e2e` boots its own Vite dev server and runs four browser-based
@@ -121,25 +122,37 @@ UI):
   matched to a much longer target note.
 
 `npm run test:ui` goes one level up: it generates real WAV/MIDI fixture
-files, serves the actual
-`dist-singlefile/index.html` production build over HTTP, and drives it
-through Playwright exactly like a user would — clicks the real upload
-inputs, clicks the real "Snap to MIDI" button, and asserts the real result
-panel and download link appear, with zero console errors. Run
-`npm run build:singlefile` first.
+files, serves the actual `dist-singlefile/index.html` production build
+over HTTP, and drives it through Playwright exactly like a user would —
+clicks the real upload inputs, clicks the real "Snap to MIDI" button, and
+asserts the real result panel and download link appear, with zero console
+errors. Run `npm run build:singlefile` first.
 
-Both test scripts need a real Chromium (AudioWorklet/WASM don't run under
+`npm run test:live` drives the real Live Monitor tab against the real
+engine: it uses Chromium's `--use-file-for-fake-audio-capture` to feed a
+synthesized, known-pitch tone (A3) as the "microphone" input, loads a
+one-note MIDI reference (C4) into the real UI, clicks the real "Start
+singing" button, and reads the real on-screen status readout to confirm
+the live engine actually detects A3 and computes the correct +3 semitone
+correction — not a simulation of the code path, the actual getUserMedia →
+AnalyserNode → YIN → signalsmith-stretch pipeline running live.
+
+All test scripts need a real Chromium (AudioWorklet/WASM don't run under
 jsdom) — set `PLAYWRIGHT_CHROMIUM_PATH` if Playwright's own browser
-download isn't available in your environment.
+download isn't available in your environment. **They only run against
+Chromium in this environment** (no Firefox/Safari binaries are installed
+here) — Firefox and Safari both support AudioWorklet/WASM/WebAudio, but
+I haven't been able to verify this app against them.
 
 ## What's not done yet
 
-- No automated test of `liveEngine.ts` (real-time mode) — everything else
-  (offline pipeline, pitch-tracker accuracy, alignment robustness, the
-  loop/clamp fallback, and the upload-through-download UI flow) is covered
-  end-to-end; live mode was validated only by reasoning from the same
-  (now-tested) scheduling primitives, not a dedicated test.
-- No cross-browser check beyond headless Chromium.
+- **No Firefox/Safari testing.** Everything here — offline pipeline,
+  pitch-tracker accuracy, alignment robustness under mismatched note
+  counts, the loop/clamp fallback, live mode, and the full upload-through-
+  download UI flow — is verified against the real engine in headless
+  Chromium, because that's the only browser binary available in the
+  environment this was built in. If you hit something that only breaks in
+  Firefox or Safari, that's the gap to check first.
 - `npm audit` reports a few moderate/high advisories, all inside
   `vitest`'s bundled dev-only `esbuild`/`vite` (dev-server request
   spoofing) — not part of the shipped bundle, low priority.
