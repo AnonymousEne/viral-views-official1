@@ -44,7 +44,11 @@ upload works everywhere, including the embedded preview.
    window and pitch-shifted onto the target note. Regions outside any
    matched segment (lead-in, trailing audio, rests in the MIDI) render as
    silence, via a downstream `GainNode`'s native `AudioParam` automation —
-   **not** the stretch node's own `active` flag. See the note below.
+   **not** the stretch node's own `active` flag. A sung note far shorter
+   than its target window is looped (via the node's native `loopStart`/
+   `loopEnd`) to sustain naturally instead of being stretched to mush; one
+   far longer than its target window is capped at a sane speed-up rather
+   than played back unnaturally fast. See the note below.
 5. **Live monitor** (`src/audio/liveEngine.ts`) — a real-time bonus mode:
    sings along to a MIDI transport with live pitch-only correction (timing
    can't be corrected live, since that requires knowing audio that hasn't
@@ -52,6 +56,27 @@ upload works everywhere, including the embedded preview.
 
 ## Known quirks (already worked around)
 
+- **YIN difference-function range bug (real accuracy bug, fixed).** The
+  original pitch tracker computed YIN's difference function only across
+  `[tauMin, tauMax]` (the configured pitch-search range) instead of from
+  `tau=1`. That breaks the algorithm's cumulative-mean normalization,
+  which depends on the full low-lag history to suppress octave/harmonic
+  errors — in practice it caused wrong-octave and harmonic-locked pitch
+  estimates on harmonically rich signals, worse at higher pitches (i.e.
+  worse for a lot of female voices). Found via `test/accuracy.ts`, a
+  battery of synthesized voice-like signals (harmonics + vibrato + breath
+  noise across the vocal range) that failed badly before the fix and pass
+  within a few cents after it. Fixed by computing the difference function
+  over the full range and only restricting the *search* for a minimum to
+  `[tauMin, tauMax]`.
+- **Extreme stretch ratios (real robustness gap, fixed).** A sung note far
+  shorter or far longer than its matched target window used to demand an
+  extreme, audibly-broken stretch factor (tens of x in either direction).
+  `correctionEngine.ts`'s `buildSchedule()` now clamps this via
+  `maxStretchRate` (default 3x): too-long sources get capped and trimmed;
+  too-short sources loop instead of stretching. Verified against the real
+  WASM engine in `test/loopcheck.ts` and stress-tested against several
+  sung/target mismatch shapes in `test/stress.ts`.
 - **`signalsmith-stretch`'s `active: false` bug.** Calling
   `AudioWorkletNode.schedule({active: false, ...})` *after* an earlier
   `active: true` schedule point silences the **entire** render, not just
@@ -82,11 +107,18 @@ npm run test:e2e         # pipeline smoke test in headless Chromium
 npm run test:ui          # (see below) drives the real UI with real file uploads
 ```
 
-`test:e2e` boots its own Vite dev server, loads `test/harness.html`, and
-drives the entire MIDI → pitch-detect → align → render pipeline directly
-(calling the audio modules, not the UI) against a synthesized (deliberately
-mistuned/mistimed) vocal take, asserting the output lands within half a
-semitone of each target note and is silent outside the matched range.
+`test:e2e` boots its own Vite dev server and runs four browser-based
+pages in headless Chromium (calling the audio modules directly, not the
+UI):
+- `harness.html` — full MIDI → pitch-detect → align → render pipeline
+  against a synthesized mistuned/mistimed take.
+- `accuracy.html` — YIN pitch-tracker accuracy across the vocal range
+  (harmonics, vibrato, breath noise); this is what caught the difference-
+  function bug above.
+- `stress.html` — alignment-plan sanity under mismatched note counts
+  (skipped notes, ad-libs, severe under/over-singing).
+- `loopcheck.html` — the loop-to-sustain fallback for a short sung note
+  matched to a much longer target note.
 
 `npm run test:ui` goes one level up: it generates real WAV/MIDI fixture
 files, serves the actual
@@ -102,8 +134,9 @@ download isn't available in your environment.
 
 ## What's not done yet
 
-- No automated test of `liveEngine.ts` (real-time mode) — the offline
-  pipeline and the upload-through-download UI flow are both covered
+- No automated test of `liveEngine.ts` (real-time mode) — everything else
+  (offline pipeline, pitch-tracker accuracy, alignment robustness, the
+  loop/clamp fallback, and the upload-through-download UI flow) is covered
   end-to-end; live mode was validated only by reasoning from the same
   (now-tested) scheduling primitives, not a dedicated test.
 - No cross-browser check beyond headless Chromium.
@@ -111,5 +144,11 @@ download isn't available in your environment.
   `vitest`'s bundled dev-only `esbuild`/`vite` (dev-server request
   spoofing) — not part of the shipped bundle, low priority.
 - The `vitest` unit-test runner is wired up (`npm test`) but no unit tests
-  have been written yet; today's coverage is the two Playwright-driven
-  smoke tests above.
+  have been written yet; today's coverage is the Playwright-driven smoke
+  tests above.
+- Mic access inside the embedded artifact preview is blocked by the
+  browser's Permissions Policy for cross-origin iframes (see "Try it now"
+  above) — this is a platform constraint the app can't override from
+  inside the page, not a bug in this code. When mic access is denied, the
+  UI now explains why and points at "Upload audio file" instead of
+  showing a raw browser error (`src/util/micError.ts`).

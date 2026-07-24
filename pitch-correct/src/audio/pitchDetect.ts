@@ -37,10 +37,15 @@ export function yinFrame(
   const tauMax = Math.min(frame.length - 1, Math.floor(sampleRate / opts.minHz));
   if (tauMax <= tauMin) return null;
 
+  // Step 1: difference function d(tau), computed from tau=1 (not tauMin).
+  // YIN's cumulative-mean normalization (step 2) needs the full low-lag
+  // history to correctly suppress octave/harmonic errors - starting the
+  // computation at tauMin instead of 1 breaks that and makes the tracker
+  // prone to locking onto a harmonic instead of the true fundamental,
+  // especially on higher/harmonically-rich voices. tauMin only bounds the
+  // *search* for a minimum (step 3), not the difference function itself.
   const diff = new Float32Array(tauMax + 1);
-
-  // Step 1: difference function d(tau), computed only over the range we care about.
-  for (let tau = tauMin; tau <= tauMax; tau++) {
+  for (let tau = 1; tau <= tauMax; tau++) {
     let sum = 0;
     const n = frame.length - tau;
     for (let j = 0; j < n; j++) {
@@ -50,24 +55,25 @@ export function yinFrame(
     diff[tau] = sum;
   }
 
-  // Step 2: cumulative mean normalized difference function.
+  // Step 2: cumulative mean normalized difference function, over the full range.
   const cmnd = new Float32Array(tauMax + 1);
-  cmnd[tauMin] = 1;
+  cmnd[0] = 1;
   let runningSum = 0;
-  for (let tau = tauMin; tau <= tauMax; tau++) {
+  for (let tau = 1; tau <= tauMax; tau++) {
     runningSum += diff[tau];
-    cmnd[tau] = tau === tauMin ? 1 : (diff[tau] * (tau - tauMin + 1)) / runningSum;
+    cmnd[tau] = (diff[tau] * tau) / runningSum;
   }
 
-  // Step 3: absolute threshold - find first local minimum below threshold.
+  // Step 3: absolute threshold - find first local minimum below threshold,
+  // restricted to the [tauMin, tauMax] window (our configured pitch range).
   let bestTau = -1;
-  for (let tau = tauMin + 1; tau < tauMax; tau++) {
+  for (let tau = Math.max(tauMin, 1); tau < tauMax; tau++) {
     if (cmnd[tau] < opts.threshold && cmnd[tau] < cmnd[tau - 1] && cmnd[tau] <= cmnd[tau + 1]) {
       bestTau = tau;
       break;
     }
   }
-  // Fallback: global minimum, if nothing crossed the threshold.
+  // Fallback: global minimum within the search window, if nothing crossed the threshold.
   if (bestTau === -1) {
     let minVal = Infinity;
     for (let tau = tauMin; tau <= tauMax; tau++) {
@@ -81,7 +87,7 @@ export function yinFrame(
 
   // Step 4: parabolic interpolation around bestTau for sub-sample precision.
   let betterTau = bestTau;
-  const x0 = bestTau > tauMin ? bestTau - 1 : bestTau;
+  const x0 = bestTau > 1 ? bestTau - 1 : bestTau;
   const x2 = bestTau + 1 <= tauMax ? bestTau + 1 : bestTau;
   if (x0 !== bestTau && x2 !== bestTau) {
     const s0 = cmnd[x0];

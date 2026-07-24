@@ -3,6 +3,7 @@ import { MidiUpload } from "./MidiUpload";
 import { startLiveSession } from "../audio/liveEngine";
 import type { LiveSession, LiveStatus } from "../audio/liveEngine";
 import type { TargetNote } from "../audio/types";
+import { describeMicError } from "../util/micError";
 
 interface LiveModeProps {
   targetNotes: TargetNote[];
@@ -45,7 +46,7 @@ export function LiveMode({ targetNotes, midiLoaded, onLoadMidi }: LiveModeProps)
       if (ctx.state === "suspended") await ctx.resume();
       sessionRef.current = await startLiveSession(ctx, targetNotes, setStatus);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not start the live session.");
+      setError(describeMicError(err));
     }
   }, [targetNotes]);
 

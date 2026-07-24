@@ -1,7 +1,16 @@
-// Integration smoke test: boots the Vite dev server, loads test/harness.html
-// in a real headless Chromium (so the actual AudioWorklet/WASM engine runs),
-// and asserts the full MIDI -> pitch-detect -> align -> render pipeline
-// produces correctly pitched, correctly timed, correctly silenced audio.
+// Integration smoke tests: boots the Vite dev server and loads each of the
+// browser test pages below in a real headless Chromium (so the actual
+// AudioWorklet/WASM engine runs), asserting they each report data-done=pass
+// on their #status element.
+//
+//   harness.html  - full MIDI -> pitch-detect -> align -> render pipeline
+//                   against a synthesized mistuned/mistimed take
+//   accuracy.html - YIN pitch-tracker accuracy across the vocal range,
+//                   with vibrato, harmonics, and breath noise
+//   stress.html   - alignment plan sanity under mismatched note counts
+//                   (skipped notes, ad-libs, severe under/over-singing)
+//   loopcheck.html - the loop-to-sustain fallback for a short sung note
+//                    matched to a much longer target note
 //
 // Usage: node test/run-e2e.mjs
 // Env:   PLAYWRIGHT_CHROMIUM_PATH - explicit path to a Chromium binary,
@@ -18,6 +27,8 @@ const viteBin = path.join(__dirname, "..", "node_modules", ".bin", "vite");
 const PORT = 5183 + Math.floor(Math.random() * 1000);
 const BASE_URL = `http://localhost:${PORT}`;
 
+const PAGES = ["harness.html", "accuracy.html", "stress.html", "loopcheck.html"];
+
 async function waitForServer(url, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
@@ -30,6 +41,26 @@ async function waitForServer(url, timeoutMs) {
     await delay(200);
   }
   throw new Error(`Dev server did not come up at ${url} within ${timeoutMs}ms`);
+}
+
+async function runPage(browser, page_) {
+  const page = await browser.newPage();
+  const logs = [];
+  page.on("console", (msg) => logs.push(msg.text()));
+  page.on("pageerror", (err) => logs.push("[pageerror] " + err.message));
+
+  await page.goto(`${BASE_URL}/test/${page_}`);
+  await page.waitForSelector("#status[data-done]", { timeout: 90000 });
+  const done = await page.getAttribute("#status", "data-done");
+  await page.close();
+
+  const ok = done === "pass" || done === "true";
+  console.log(`\n=== ${page_}: ${ok ? "PASS" : "FAIL"} ===`);
+  for (const line of logs) {
+    if (line.startsWith("[vite]") || line.includes("404")) continue;
+    console.log(line);
+  }
+  return ok;
 }
 
 async function main() {
@@ -49,28 +80,18 @@ async function main() {
 
   try {
     await waitForServer(BASE_URL, 20000);
-
     const browser = await chromium.launch(browserOptions);
-    const page = await browser.newPage();
-    page.on("pageerror", (err) => console.error("[pageerror]", err.message));
 
-    await page.goto(`${BASE_URL}/test/harness.html`);
-    await page.waitForSelector("#status[data-done]", { timeout: 60000 });
+    let allOk = true;
+    for (const p of PAGES) {
+      const ok = await runPage(browser, p);
+      allOk = allOk && ok;
+    }
 
-    const result = await page.evaluate(() => window.__harnessResult);
     await browser.close();
 
-    for (const c of result.checks ?? []) {
-      console.log(`${c.pass ? "PASS" : "FAIL"} ${c.name}: ${c.detail}`);
-    }
-    if (result.error) console.error("ERROR:", result.error);
-
-    if (!result.ok) {
-      console.error("\nE2E smoke test FAILED");
-      process.exitCode = 1;
-    } else {
-      console.log("\nE2E smoke test passed");
-    }
+    console.log(allOk ? "\nAll e2e smoke tests passed" : "\nSome e2e smoke tests FAILED");
+    process.exitCode = allOk ? 0 : 1;
   } catch (err) {
     console.error(viteOutput);
     throw err;

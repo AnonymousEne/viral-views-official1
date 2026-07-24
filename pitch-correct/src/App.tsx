@@ -7,6 +7,7 @@ import { runCorrectionPipeline } from "./audio/pipeline";
 import { audioBufferToWav } from "./audio/wav";
 import type { PipelineResult, PipelineStage } from "./audio/pipeline";
 import type { TargetNote } from "./audio/types";
+import { checkBrowserSupport } from "./util/browserSupport";
 
 const STAGE_LABEL: Record<PipelineStage, string> = {
   "decoding-audio": "Decoding your recording…",
@@ -18,7 +19,15 @@ const STAGE_LABEL: Record<PipelineStage, string> = {
 
 type Tab = "offline" | "live";
 
+function describeProcessError(err: unknown): string {
+  if (err instanceof DOMException && (err.name === "EncodingError" || err.name === "NotSupportedError")) {
+    return "Couldn't read that audio file — it may be corrupted or an unsupported format. Try a WAV, MP3, or M4A file.";
+  }
+  return err instanceof Error ? err.message : "Something went wrong while processing.";
+}
+
 export default function App() {
+  const [unsupportedReason] = useState<string | null>(() => checkBrowserSupport());
   const [tab, setTab] = useState<Tab>("offline");
   const [vocalBlob, setVocalBlob] = useState<Blob | null>(null);
   const [vocalUrl, setVocalUrl] = useState<string | null>(null);
@@ -35,7 +44,7 @@ export default function App() {
     return audioContextRef.current;
   }, []);
 
-  const canProcess = Boolean(vocalBlob) && Boolean(midiData) && stage === null;
+  const canProcess = Boolean(vocalBlob) && Boolean(midiData) && stage === null && !unsupportedReason;
 
   const handleProcess = useCallback(async () => {
     if (!vocalBlob || !midiData) return;
@@ -53,7 +62,7 @@ export default function App() {
       const wavBlob = audioBufferToWav(pipelineResult.correctedBuffer);
       setCorrectedUrl(URL.createObjectURL(wavBlob));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong while processing.");
+      setError(describeProcessError(err));
     } finally {
       setStage(null);
     }
@@ -75,6 +84,12 @@ export default function App() {
           </button>
         </nav>
       </header>
+
+      {unsupportedReason && (
+        <div className="panel">
+          <p className="error">{unsupportedReason}</p>
+        </div>
+      )}
 
       {tab === "offline" ? (
         <main>
@@ -113,22 +128,31 @@ export default function App() {
           {result && correctedUrl && (
             <div className="panel">
               <h2>4. Result</h2>
-              <div className="ab-row">
-                <div>
-                  <p className="ab-label">Original</p>
-                  {vocalUrl && <audio controls src={vocalUrl} />}
-                </div>
-                <div>
-                  <p className="ab-label">Corrected</p>
-                  <audio controls src={correctedUrl} />
-                </div>
-              </div>
-              <a className="btn secondary" href={correctedUrl} download="corrected-vocal.wav">
-                Download corrected WAV
-              </a>
-              <p className="meta">
-                {result.plan.segments.length} note(s) matched of {targetNotes.length} target note(s).
-              </p>
+              {result.plan.segments.length === 0 ? (
+                <p className="error">
+                  No singing was detected in your recording, so there's nothing to correct. Make sure the
+                  recording isn't silent or too quiet, then try again.
+                </p>
+              ) : (
+                <>
+                  <div className="ab-row">
+                    <div>
+                      <p className="ab-label">Original</p>
+                      {vocalUrl && <audio controls src={vocalUrl} />}
+                    </div>
+                    <div>
+                      <p className="ab-label">Corrected</p>
+                      <audio controls src={correctedUrl} />
+                    </div>
+                  </div>
+                  <a className="btn secondary" href={correctedUrl} download="corrected-vocal.wav">
+                    Download corrected WAV
+                  </a>
+                  <p className="meta">
+                    {result.plan.segments.length} note(s) matched of {targetNotes.length} target note(s).
+                  </p>
+                </>
+              )}
             </div>
           )}
         </main>

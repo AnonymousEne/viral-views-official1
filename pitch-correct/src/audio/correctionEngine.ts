@@ -7,11 +7,19 @@ export interface CorrectionEngineOptions {
   tailPadding: number;
   /** Fade duration (seconds) at the edges of silence gaps, to avoid clicks. */
   gapFade: number;
+  /**
+   * Maximum time-stretch factor in either direction before we stop trying
+   * to stretch a single pass and reach for a different strategy instead.
+   * Real phase-vocoder stretching degrades audibly well before this, so
+   * this is a hard ceiling, not a target.
+   */
+  maxStretchRate: number;
 }
 
 export const DEFAULT_ENGINE_OPTIONS: CorrectionEngineOptions = {
   tailPadding: 0.5,
   gapFade: 0.01,
+  maxStretchRate: 3,
 };
 
 /**
@@ -59,7 +67,7 @@ export async function renderCorrectedAudio(
   gain.connect(offlineCtx.destination);
   applyGainAutomation(gain, plan, opts.gapFade);
 
-  const schedulePoints = buildSchedule(plan);
+  const schedulePoints = buildSchedule(plan, opts.maxStretchRate);
   for (const point of schedulePoints) {
     await node.schedule(point);
   }
@@ -72,27 +80,59 @@ export async function renderCorrectedAudio(
  * schedule() calls: always `active: true`, repositioning/re-pitching the
  * read head at each segment's output start. Gaps are silenced separately
  * via the GainNode (see applyGainAutomation) rather than via `active`.
+ *
+ * Mismatched note lengths (a singer's held note much shorter or much longer
+ * than its target) are common - a missed note, an ad-lib, a rest the singer
+ * didn't hold. Left alone, the naive `rate = sourceDuration / duration`
+ * can demand absurd stretch factors (a 50ms blip smeared across 3 seconds,
+ * or a 3-second note crushed into 150ms), which reliably sounds broken
+ * however good the underlying algorithm is. Two different fixes for two
+ * different directions, both bounded by `maxStretchRate`:
+ *   - source much longer than needed (rate > max): cap the rate and just
+ *     read a *portion* of the source, rather than the whole thing sped up
+ *     unnaturally.
+ *   - source much shorter than needed (rate < 1/max): loop the sung
+ *     snippet via the node's native `loopStart`/`loopEnd`, so a short
+ *     sound naturally sustains for the target's duration instead of being
+ *     stretched into mush.
  */
-export function buildSchedule(plan: CorrectionPlan): StretchSchedulePoint[] {
+export function buildSchedule(plan: CorrectionPlan, maxStretchRate = DEFAULT_ENGINE_OPTIONS.maxStretchRate): StretchSchedulePoint[] {
   const points: StretchSchedulePoint[] = [];
 
   if (plan.segments.length === 0 || plan.segments[0].outStart > 1e-6) {
-    points.push({ output: 0, active: true, input: 0, rate: 1, semitones: 0 });
+    points.push({ output: 0, active: true, input: 0, rate: 1, semitones: 0, loopStart: 0, loopEnd: 0 });
   }
 
   for (const seg of plan.segments) {
     const duration = seg.outEnd - seg.outStart;
     const sourceDuration = seg.sungEnd - seg.sungStart;
-    const rate = duration > 0 ? sourceDuration / duration : 1;
+    const naturalRate = duration > 0 ? sourceDuration / duration : 1;
     const semitones = seg.targetMidi != null && seg.sourceMidi != null ? seg.targetMidi - seg.sourceMidi : 0;
 
-    points.push({
-      output: seg.outStart,
-      active: true,
-      input: seg.sungStart,
-      rate,
-      semitones,
-    });
+    if (naturalRate < 1 / maxStretchRate && sourceDuration > 0) {
+      // Source is much shorter than the target window: loop it to sustain
+      // naturally rather than stretching one short sound to mush.
+      points.push({
+        output: seg.outStart,
+        active: true,
+        input: seg.sungStart,
+        rate: 1,
+        semitones,
+        loopStart: seg.sungStart,
+        loopEnd: seg.sungEnd,
+      });
+    } else {
+      const rate = Math.min(naturalRate, maxStretchRate);
+      points.push({
+        output: seg.outStart,
+        active: true,
+        input: seg.sungStart,
+        rate,
+        semitones,
+        loopStart: seg.sungStart,
+        loopEnd: seg.sungStart,
+      });
+    }
   }
 
   return points;

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { describeMicError } from "../util/micError";
 
 interface RecorderProps {
   onCapture: (blob: Blob, url: string) => void;
@@ -41,7 +42,7 @@ export function Recorder({ onCapture }: RecorderProps) {
       mediaRecorderRef.current = recorder;
       setRecording(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Microphone access failed.");
+      setError(describeMicError(err));
     }
   }, [onCapture]);
 
