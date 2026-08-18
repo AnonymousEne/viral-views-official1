@@ -18,6 +18,7 @@ import { writeFile, mkdir } from "fs/promises";
 import { join, extname } from "path";
 import { existsSync } from "fs";
 import express from "express";
+import Anthropic from "@anthropic-ai/sdk";
 import { 
   insertTrackSchema, 
   insertBattleSchema, 
@@ -518,6 +519,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ws.on('close', () => {
       console.log(`WebSocket client disconnected: userId=${ws.userId}`);
     });
+  });
+
+  // ── Lyric Generator ──────────────────────────────────────────────────────
+  const lyricRequestSchema = z.object({
+    transcript:   z.string().max(4000).optional().default(""),
+    genre:        z.string().max(60).optional().default("any"),
+    mood:         z.string().max(60).optional().default("auto-detect"),
+    style:        z.string().max(60).optional().default("modern"),
+    theme:        z.string().max(200).optional().default(""),
+    extraContext: z.string().max(500).optional().default(""),
+    bpm:          z.string().max(20).optional().default(""),
+    rhymeScheme:  z.string().max(20).optional().default("AABB"),
+  });
+
+  app.post("/api/lyric-generator", async (req, res) => {
+    const parsed = lyricRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid request", errors: parsed.error.issues });
+    }
+
+    const { transcript, genre, mood, style, theme, extraContext, bpm, rhymeScheme } = parsed.data;
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return res.status(503).json({ message: "AI service not configured. Set ANTHROPIC_API_KEY." });
+    }
+
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+    const contextParts: string[] = [];
+    if (transcript) contextParts.push(`AUDIO TRANSCRIPT / FREESTYLE INPUT:\n"${transcript}"`);
+    if (genre !== "any") contextParts.push(`Genre: ${genre}`);
+    if (mood !== "auto-detect") contextParts.push(`Mood/Vibe: ${mood}`);
+    if (style !== "modern") contextParts.push(`Style: ${style}`);
+    if (theme) contextParts.push(`Core Theme: ${theme}`);
+    if (bpm) contextParts.push(`BPM/Tempo feel: ${bpm}`);
+    if (extraContext) contextParts.push(`Additional context: ${extraContext}`);
+    contextParts.push(`Rhyme scheme preference: ${rhymeScheme}`);
+
+    const systemPrompt = `You are a world-class lyricist and songwriter with deep expertise across all genres — hip-hop, R&B, pop, soul, rock, trap, afrobeats, country, and beyond. You write lyrics that are emotionally powerful, culturally resonant, metaphor-rich, and highly original. Every song you write tells a story, creates vivid imagery, and has a memorable hook. You understand flow, cadence, syllable stress, internal rhymes, multisyllabic rhymes, and song structure deeply.`;
+
+    const userPrompt = `${contextParts.length > 0 ? contextParts.join("\n") : "Create an original song with a compelling concept."}
+
+Generate a FULL, POWERFUL, CREATIVE song with the following structure. Output EXACTLY in this format (use these exact section headers):
+
+---SONG TITLE---
+[A bold, evocative title]
+
+---CONCEPT---
+[2-3 sentences describing the song's story, emotional arc, and central metaphor]
+
+---VERSE 1---
+[8-12 lines — set the scene, introduce the protagonist and conflict. Use vivid imagery, strong verbs, and internal rhymes.]
+
+---PRE-CHORUS---
+[4-6 lines — emotional build-up that bridges the verse to the chorus. Rising tension.]
+
+---CHORUS---
+[6-8 lines — the emotional peak. Memorable, singable, hooky. The lines that stick in people's heads. Repeat-worthy.]
+
+---VERSE 2---
+[8-12 lines — deepen the story. New perspective, new details. Don't repeat Verse 1.]
+
+---BRIDGE---
+[4-8 lines — a dramatic tonal/emotional shift. Could be spoken word, a revelation, a breakdown, or the most raw/vulnerable moment.]
+
+---OUTRO---
+[4-6 lines — resolution or open ending. Can be a callback to the chorus or a final gut-punch line.]
+
+---DELIVERY NOTES---
+[3-5 bullet points on vocal performance: pacing, emphasis, breath points, tone shifts, ad-libs]
+
+---RHYME MAP---
+[Show the rhyme scheme of the chorus using ABAB notation or similar]
+
+Make every single word count. No filler lines. Every verse should feel inevitable and surprising at the same time.`;
+
+    // SSE streaming response
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+
+    try {
+      const stream = anthropic.messages.stream({
+        model: "claude-sonnet-4-6",
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
+      });
+
+      stream.on("text", (text) => {
+        res.write(`data: ${JSON.stringify({ text })}\n\n`);
+      });
+
+      await stream.finalMessage();
+      res.write("data: [DONE]\n\n");
+      res.end();
+    } catch (err: any) {
+      console.error("Lyric generator error:", err);
+      res.write(`data: ${JSON.stringify({ error: err.message ?? "Generation failed" })}\n\n`);
+      res.end();
+    }
   });
 
   return httpServer;
